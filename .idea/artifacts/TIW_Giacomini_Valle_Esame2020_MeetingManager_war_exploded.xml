@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="TIW-Giacomini-Valle-Esame2020-MeetingManager:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/TIW_Giacomini_Valle_Esame2020_MeetingManager_war_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="TIW-Giacomini-Valle-Esame2020-MeetingManager/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="TIW-Giacomini-Valle-Esame2020-MeetingManager" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
