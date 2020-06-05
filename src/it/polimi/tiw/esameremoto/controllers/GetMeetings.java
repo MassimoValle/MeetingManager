@@ -24,13 +24,13 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 
-@WebServlet("/Home")
-public class GoToHome extends HttpServlet {
+@WebServlet("/GetMeetings")
+public class GetMeetings extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private TemplateEngine templateEngine;
     private Connection connection = null;
 
-    public GoToHome() {
+    public GetMeetings() {
         super();
     }
 
@@ -46,11 +46,11 @@ public class GoToHome extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // If the user is not logged in (not present in session) redirect to the login
-        String loginpath = getServletContext().getContextPath() + "/index.html";
+        String loginPath = getServletContext().getContextPath() + "/index.html";
         HttpSession session = request.getSession();
 
         if (session.isNew() || session.getAttribute("user") == null) {
-            response.sendRedirect(loginpath);
+            response.sendRedirect(loginPath);
             return;
         }
 

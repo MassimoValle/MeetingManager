@@ -7,6 +7,14 @@
         <element id="directory" name="classes">
           <element id="module-output" name="TIW-Giacomini-Valle-Esame2020-MeetingManager" />
         </element>
+        <element id="directory" name="lib">
+          <element id="file-copy" path="$PROJECT_DIR$/../../../Program Files/Java/thymeleaf-3.0.9.RELEASE/lib/ognl-3.1.12.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/../../../Program Files/Java/thymeleaf-3.0.9.RELEASE/lib/slf4j-api-1.7.25.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/../../../Program Files/Java/thymeleaf-3.0.9.RELEASE/lib/javassist-3.20.0-GA.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/../../../Program Files/Java/thymeleaf-3.0.9.RELEASE/lib/unbescape-1.1.5.RELEASE.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/../../../Program Files/Java/thymeleaf-3.0.9.RELEASE/lib/attoparser-2.0.4.RELEASE.jar" />
+          <element id="library" level="project" name="Maven: org.thymeleaf:thymeleaf:Release" />
+        </element>
       </element>
     </root>
   </artifact>

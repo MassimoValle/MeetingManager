@@ -10,20 +10,21 @@ import javax.servlet.UnavailableException;
 public class ConnectionHandler {
 
 	public static Connection getConnection(ServletContext context) throws UnavailableException {
-		Connection connection = null;
+		Connection connection;
+		
 		try {
-
 			String driver = context.getInitParameter("dbDriver");
 			String url = context.getInitParameter("dbUrl");
 			String user = context.getInitParameter("dbUser");
 			String password = context.getInitParameter("dbPassword");
-			Class.forName(driver);
+			Class.forName(driver);	// Per verificare che il driver sia stato caricato
 			connection = DriverManager.getConnection(url, user, password);
 		} catch (ClassNotFoundException e) {
 			throw new UnavailableException("Can't load database driver");
 		} catch (SQLException e) {
 			throw new UnavailableException("Couldn't get db connection");
 		}
+		
 		return connection;
 	}
 

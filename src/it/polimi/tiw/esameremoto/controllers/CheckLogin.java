@@ -17,24 +17,19 @@ import it.polimi.tiw.esameremoto.beans.User;
 import it.polimi.tiw.esameremoto.dao.UserDAO;
 import it.polimi.tiw.esameremoto.utils.ConnectionHandler;
 
-
 // import thymeleaf
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
+import org.apache.commons.text.StringEscapeUtils;
 
 @WebServlet("/CheckLogin")
 public class CheckLogin extends HttpServlet {
-	
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	private TemplateEngine templateEngine;
-
-	public CheckLogin() {
-		super();
-	}
 
 	public void init() throws ServletException {
 		
@@ -51,32 +46,33 @@ public class CheckLogin extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		// obtain and escape params
-		String usrn = null;
-		String pwd = null;
+		String username = null;
+		String password = null;
 		
 		try {
-
-			// import org.apache.commons.lang.StringEscapeUtils
-			//usrn = StringEscapeUtils.escapeJava(request.getParameter("username"));
-			//pwd = StringEscapeUtils.escapeJava(request.getParameter("pwd"));
-
-			usrn = request.getParameter("username");
-			pwd = request.getParameter("pwd");
-			
+			username = StringEscapeUtils.escapeJava(request.getParameter("username"));
+			password = StringEscapeUtils.escapeJava(request.getParameter("password"));
+			if (username==null || password==null){
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				response.getWriter().println("Credentials must be not null");
+				return;
+			}
+			else if(username.isEmpty() || password.isEmpty()){
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				response.getWriter().println("Credentials can't be empty.");
+				return;
+			}
 		} catch (NullPointerException e) {
-			
-			// for debugging only e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing param values");
-			return;
-			
+			e.printStackTrace(); //TODO da togliere a progetto finito
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		}
-
+		
 		// query db to authenticate for user
 		UserDAO userDao = new UserDAO(connection);
-		User user = null;
+		User user;
 		
 		try {
-			user = userDao.checkCredentials(usrn, pwd);
+			user = userDao.checkUser(username, password);
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not Possible to check credentials");
 			return;
@@ -90,19 +86,15 @@ public class CheckLogin extends HttpServlet {
 		if (user == null) {
 			
 			ServletContext servletContext = getServletContext();
-			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-			if (usrn.isEmpty() || pwd.isEmpty()) {
-				ctx.setVariable("errorMsg", "Username and password cannot be empty");
-			} else {
-				ctx.setVariable("errorMsg", "Incorrect username or password");
-			}
+			final WebContext webContext = new WebContext(request, response, servletContext, request.getLocale());
+			webContext.setVariable("errorMsg", "Incorrect username or password");
 			path = "/index.html";
-			templateEngine.process(path, ctx, response.getWriter());
+			templateEngine.process(path, webContext, response.getWriter());
 			
 		} else {
 			
 			request.getSession().setAttribute("user", user);
-			path = getServletContext().getContextPath() + "/Home";	//va alla GoToHome Servler
+			path = getServletContext().getContextPath() + "/GetMeetings";	//va alla GetMeetings Servlets
 			response.sendRedirect(path);
 			
 		}

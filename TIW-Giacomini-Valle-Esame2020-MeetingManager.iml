@@ -19,7 +19,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="Tomcat 9.0.358" level="application_server_libraries" />
     <orderEntry type="library" name="Maven: org.thymeleaf:thymeleaf:Release" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Tomcat 9.0.31" level="application_server_libraries" />
+    <orderEntry type="library" name="commons-text-1.8-javadoc" level="project" />
   </component>
 </module>

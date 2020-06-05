@@ -3,4 +3,30 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
+    <context-param>
+        <param-name>dbUrl</param-name>
+        <param-value>jdbc:mysql://localhost:3306/db_meeting_manager_ESAME2020</param-value>
+    </context-param>
+    <context-param>
+        <param-name>dbUser</param-name>
+        <param-value>root</param-value>
+    </context-param>
+    <context-param>
+        <param-name>dbPassword</param-name>
+        <param-value>???drowssap!!!</param-value>
+    </context-param>
+    <context-param>
+        <param-name>dbDriver</param-name>
+        <param-value>com.mysql.cj.jdbc.Driver</param-value>
+    </context-param>
+
+    <filter>
+        <filter-name>LoginChecker</filter-name>
+        <filter-class>it.polimi.tiw.esameremoto.filters.LoginChecker</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>LoginChecker</filter-name>
+        <!--DA MODIFICARE-->
+        <url-pattern>/CheckLogin</url-pattern>
+    </filter-mapping>
 </web-app>
