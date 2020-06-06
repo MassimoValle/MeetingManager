@@ -74,7 +74,7 @@ public class CreateMeeting extends HttpServlet {
         User user = (User) session.getAttribute("user");
         MeetingDAO meetingDAO = new MeetingDAO(connection);
         try {
-            meetingDAO.createMeeting(name, date, description, user.getId());
+            meetingDAO.createMeeting(name, date, description, user.getUsername());
         } catch (SQLException e) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to create mission");
             return;

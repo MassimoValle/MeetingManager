@@ -56,10 +56,10 @@ public class GetMeetings extends HttpServlet {
 
         User user = (User) session.getAttribute("user");
         MeetingDAO meetingDAO = new MeetingDAO(connection);
-        List<Meeting> meetings = new ArrayList<Meeting>();
+        List<Meeting> meetings;
 
         try {
-            meetings = meetingDAO.findMeetingsByUser(user.getId());
+            meetings = meetingDAO.findMeetingsByUser(user.getUsername());
         } catch (SQLException e) {
             // for debugging only e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover missions");
@@ -67,10 +67,20 @@ public class GetMeetings extends HttpServlet {
         }
 
         // Redirect to the Home page and add missions to the parameters
-        String path = "/WEB-INF/home.html";
+        String path = "/home.html";
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-        ctx.setVariable("meetings", meetings);
+    
+        ArrayList<Meeting> myMeetings = new ArrayList<>();
+        ArrayList<Meeting> othersMeetings = new ArrayList<>();
+        for (Meeting meeting : meetings){
+            if (meeting.getUsernameCreator().equals(user.getUsername()))
+                myMeetings.add(meeting);
+            else
+                othersMeetings.add(meeting);
+        }
+        ctx.setVariable("myMeetings", myMeetings);
+        ctx.setVariable("othersMeetings", othersMeetings);
         templateEngine.process(path, ctx, response.getWriter());
     }
 

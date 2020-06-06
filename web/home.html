@@ -19,16 +19,16 @@
     <tr>
         <th>Meeting</th>
         <th>Date</th>
-        <th>Description</th>
+        <th>Starting hour</th>
         <th>Link</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="m : ${meetings}">
-        <td th:text="${m.name}"></td>
-        <td th:text="${ m.date }"></td>
-        <td th:text="${ m.description }"></td>
-        <td><a th:href="@{/GetMissionDetails(missionid=${m.id})}">Details</a></td>
+    <tr th:each="myMeeting : ${myMeetings}">
+        <td th:text="${myMeeting.title}"></td>
+        <td th:text="${myMeeting.date}"></td>
+        <td th:text="${myMeeting.hour}"></td>
+        <td><a th:href="@{/GetMissionDetails(missionid=${myMeeting.idMeeting})}">Details</a></td>
     </tr>
     </tbody>
 </table>
@@ -39,16 +39,16 @@
     <tr>
         <th>Meeting</th>
         <th>Date</th>
-        <th>Description</th>
+        <th>Starting hour</th>
         <th>Link</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="m : ${meetings}">
-        <td th:text="${m.name}"></td>
-        <td th:text="${ m.date }"></td>
-        <td th:text="${ m.description }"></td>
-        <td><a th:href="@{/GetMissionDetails(missionid=${m.id})}">Details</a></td>
+    <tr th:each="othersMeeting : ${othersMeetings}">
+        <td th:text="${othersMeeting.title}"></td>
+        <td th:text="${othersMeeting.date}"></td>
+        <td th:text="${othersMeeting.hour}"></td>
+        <td><a th:href="@{/GetMissionDetails(missionid=${othersMeeting.idMeeting})}">Details</a></td>
     </tr>
     </tbody>
 </table>

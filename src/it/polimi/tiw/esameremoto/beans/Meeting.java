@@ -1,52 +1,71 @@
 package it.polimi.tiw.esameremoto.beans;
 
-import java.util.Date;
+import java.sql.Date;
+import java.sql.Time;
 
 public class Meeting {
 
-    private int id;
-    private String name;
+    private int idMeeting;
+    private Time hour;
     private Date date;
-    private String description;
-
-    public Meeting(){}
-
-    public Meeting(int id, String name, Date date, String description){
-        this.setId(id);
-        this.setName(name);
-        this.setDate(date);
-        this.setDescription(description);
+    private String title;
+    private Time duration;
+    private int maxParticipantsNumber;
+    private String usernameCreator;
+    
+    public int getIdMeeting() {
+        return idMeeting;
     }
-
-    public int getId() {
-        return id;
+    
+    public void setIdMeeting(int idMeeting) {
+        this.idMeeting = idMeeting;
     }
-
-    public void setId(int id) {
-        this.id = id;
+    
+    public Time getHour() {
+        return hour;
     }
-
-    public String getName() {
-        return name;
+    
+    public void setHour(Time hour) {
+        this.hour = hour;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
+    
     public Date getDate() {
         return date;
     }
-
+    
     public void setDate(Date date) {
         this.date = date;
     }
-
-    public String getDescription() {
-        return description;
+    
+    public String getTitle() {
+        return title;
     }
-
-    public void setDescription(String description) {
-        this.description = description;
+    
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    
+    public Time getDuration() {
+        return duration;
+    }
+    
+    public void setDuration(Time duration) {
+        this.duration = duration;
+    }
+    
+    public int getMaxParticipantsNumber() {
+        return maxParticipantsNumber;
+    }
+    
+    public void setMaxParticipantsNumber(int maxParticipantsNumber) {
+        this.maxParticipantsNumber = maxParticipantsNumber;
+    }
+    
+    public String getUsernameCreator() {
+        return usernameCreator;
+    }
+    
+    public void setUsernameCreator(String usernameCreator) {
+        this.usernameCreator = usernameCreator;
     }
 }

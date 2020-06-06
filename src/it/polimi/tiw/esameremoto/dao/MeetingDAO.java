@@ -12,40 +12,53 @@ import java.util.List;
 
 public class MeetingDAO {
 
-    private Connection con;
+    private Connection connection;
 
     public MeetingDAO(Connection connection) {
-        this.con = connection;
+        this.connection = connection;
     }
 
-    public List<Meeting> findMeetingsByUser(int userId) throws SQLException {
+    public List<Meeting> findMeetingsByUser(String username) throws SQLException {
 
-        List<Meeting> meetings = new ArrayList<Meeting>();
+        List<Meeting> meetings = new ArrayList<>();
 
-        String query = "SELECT * from reunions where reporter = ? ORDER BY date DESC";
-        try (PreparedStatement pstatement = con.prepareStatement(query);) {
-            pstatement.setInt(1, userId);
-            try (ResultSet result = pstatement.executeQuery();) {
+        String query =
+                "SELECT * FROM db_meeting_manager_esame2020.meeting " +
+                "WHERE idMeeting = any (" +
+                        "SELECT idMeeting " +
+                        "FROM participation " +
+                        "WHERE username = ?" +
+                        ")";
+        
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, username);
+            
+            try (ResultSet result = preparedStatement.executeQuery()) {
                 while (result.next()) {
                     Meeting meeting = new Meeting();
-                    meeting.setId(result.getInt("id"));
+                    meeting.setIdMeeting(result.getInt("idMeeting"));
+                    meeting.setHour(result.getTime("hour"));
                     meeting.setDate(result.getDate("date"));
-                    meeting.setDescription(result.getString("description"));
+                    meeting.setDuration(result.getTime("duration"));
+                    meeting.setMaxParticipantsNumber(result.getInt("maxParticipantsNumber"));
+                    meeting.setTitle(result.getString("title"));
+                    meeting.setUsernameCreator(result.getString("usernameCreator"));
                     meetings.add(meeting);
                 }
             }
         }
+        
         return meetings;
     }
 
-    public void createMeeting(String name, Date date, String description, int reporterId) throws SQLException {
+    public void createMeeting(String name, Date date, String description, String reporterId) throws SQLException {
 
         String query = "INSERT into meetings (name, date, description, reporter) VALUES(?, ?, ?, ?)";
-        try (PreparedStatement pstatement = con.prepareStatement(query);) {
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
             pstatement.setString(1, name);
             pstatement.setDate(2, new java.sql.Date(date.getTime()));
             pstatement.setString(3, description);
-            pstatement.setInt(4, reporterId);
+            pstatement.setString(4, reporterId);
             pstatement.executeUpdate();
         }
     }

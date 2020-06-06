@@ -14,23 +14,25 @@ public class UserDAO {
 		this.connection = connection;
 	}
 
-	public User checkUser(String usrn, String pwd) throws SQLException {
-		String query = "SELECT  id, username, name, surname FROM user  WHERE username = ? AND password =?";
-		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
-			pstatement.setString(1, usrn);
-			pstatement.setString(2, pwd);
-			try (ResultSet result = pstatement.executeQuery();) {
-				if (!result.isBeforeFirst()) // no results, credential check failed
-					return null;
-				else {
-					result.next();
+	public User checkUser(String username, String password) throws SQLException {
+		String query = "SELECT * FROM db_meeting_manager_esame2020.user WHERE username=? AND password=?";
+		
+		// try-catch with resources
+		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			preparedStatement.setString(1, username);
+			preparedStatement.setString(2, password);
+			
+			try (ResultSet result = preparedStatement.executeQuery()) {
+				if (result.next()){
 					User user = new User();
-					user.setId(result.getInt("id"));
 					user.setUsername(result.getString("username"));
+					user.setPassword(result.getString("password"));
 					user.setName(result.getString("name"));
 					user.setSurname(result.getString("surname"));
+					user.setEmail(result.getString("email"));
 					return user;
 				}
+				else return null;
 			}
 		}
 	}
