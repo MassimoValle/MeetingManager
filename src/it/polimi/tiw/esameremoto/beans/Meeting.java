@@ -1,6 +1,6 @@
 package it.polimi.tiw.esameremoto.beans;
 
-import java.sql.Date;
+import java.util.Date;
 import java.sql.Time;
 
 public class Meeting {
@@ -9,7 +9,7 @@ public class Meeting {
     private Time hour;
     private Date date;
     private String title;
-    private Time duration;
+    private int duration;
     private int maxParticipantsNumber;
     private String usernameCreator;
     
@@ -45,11 +45,11 @@ public class Meeting {
         this.title = title;
     }
     
-    public Time getDuration() {
+    public Integer getDuration() {
         return duration;
     }
     
-    public void setDuration(Time duration) {
+    public void setDuration(Integer duration) {
         this.duration = duration;
     }
     

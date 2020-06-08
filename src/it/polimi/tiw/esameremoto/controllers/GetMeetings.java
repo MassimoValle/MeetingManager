@@ -45,16 +45,8 @@ public class GetMeetings extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // If the user is not logged in (not present in session) redirect to the login
-        String loginPath = getServletContext().getContextPath() + "/index.html";
-        HttpSession session = request.getSession();
-
-        if (session.isNew() || session.getAttribute("user") == null) {
-            response.sendRedirect(loginPath);
-            return;
-        }
-
-        User user = (User) session.getAttribute("user");
+        
+        User user = (User) request.getSession().getAttribute("user");
         MeetingDAO meetingDAO = new MeetingDAO(connection);
         List<Meeting> meetings;
 
@@ -69,7 +61,7 @@ public class GetMeetings extends HttpServlet {
         // Redirect to the Home page and add missions to the parameters
         String path = "/home.html";
         ServletContext servletContext = getServletContext();
-        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+        final WebContext webContext = new WebContext(request, response, servletContext, request.getLocale());
     
         ArrayList<Meeting> myMeetings = new ArrayList<>();
         ArrayList<Meeting> othersMeetings = new ArrayList<>();
@@ -79,9 +71,11 @@ public class GetMeetings extends HttpServlet {
             else
                 othersMeetings.add(meeting);
         }
-        ctx.setVariable("myMeetings", myMeetings);
-        ctx.setVariable("othersMeetings", othersMeetings);
-        templateEngine.process(path, ctx, response.getWriter());
+        
+        //TODO le riunioni da mostrare non devono essere ancora scadute
+        webContext.setVariable("myMeetings", myMeetings);
+        webContext.setVariable("othersMeetings", othersMeetings);
+        templateEngine.process(path, webContext, response.getWriter());
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

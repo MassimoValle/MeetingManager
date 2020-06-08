@@ -1,98 +1,94 @@
 package it.polimi.tiw.esameremoto.controllers;
 
+import it.polimi.tiw.esameremoto.beans.Meeting;
 import it.polimi.tiw.esameremoto.beans.User;
 import it.polimi.tiw.esameremoto.dao.MeetingDAO;
 import it.polimi.tiw.esameremoto.utils.ConnectionHandler;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.Date;
 
 @WebServlet("/CreateMeeting")
 public class CreateMeeting extends HttpServlet {
     private static final long serialVersionUID = 1L;
-
+    
     private Connection connection = null;
-
-    public CreateMeeting() {
-        super();
-    }
-
+    private TemplateEngine templateEngine;
+    
     public void init() throws ServletException {
+        this.templateEngine = ServletUtils.createThymeleafTemplate(getServletContext());
         connection = ConnectionHandler.getConnection(getServletContext());
     }
-
-    private Date getMeYesterday() {
-        return new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000);
-    }
-
+    
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // If the user is not logged in (not present in session) redirect to the login
+        doGet(request, response);
+    }
+    
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        if (session.isNew() || session.getAttribute("user") == null) {
-            String loginpath = getServletContext().getContextPath() + "/index.html";
-            response.sendRedirect(loginpath);
-            return;
-        }
-
-        // Get and parse all parameters from request
-        boolean isBadRequest = false;
-        String name = null;
-        Date date = null;
-        String description = null;
-        try {
-
-            name = request.getParameter("name");
-            //description = StringEscapeUtils.escapeJava(request.getParameter("description"));
-            description = request.getParameter("description");
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            date = (Date) sdf.parse(request.getParameter("date"));
-
-            isBadRequest = name.isEmpty() || date==null;
-
-        } catch (NumberFormatException | NullPointerException | ParseException e) {
-            isBadRequest = true;
-            e.printStackTrace();
-        }
-        if (isBadRequest) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect or missing param values");
-            return;
-        }
-
-        // Create mission in DB
-        User user = (User) session.getAttribute("user");
+        Object tempUsersChosen = session.getAttribute("usersChosen");
         MeetingDAO meetingDAO = new MeetingDAO(connection);
+        ArrayList<String> usersChosen;
+    
+        Meeting meeting = (Meeting) session.getAttribute("meetingToCreate");
+        Time hour = meeting.getHour();
+        Date date = meeting.getDate();
+        String title = meeting.getTitle();
+        int duration = meeting.getDuration();
+        int maxParticipantsNumber = meeting.getMaxParticipantsNumber();
+        String usernameCreator = meeting.getUsernameCreator();
+    
         try {
-            meetingDAO.createMeeting(name, date, description, user.getUsername());
+            if (tempUsersChosen==null)
+                meetingDAO.createMeeting(title, date, hour, duration, maxParticipantsNumber, usernameCreator, null);
+            else {
+                usersChosen = (ArrayList<String>) tempUsersChosen;
+                
+                if (usersChosen.size() > maxParticipantsNumber) {
+                    session.setAttribute("errorMessage", "Troppi utenti selezionati, eliminarne almeno "
+                            + (usersChosen.size()-maxParticipantsNumber));
+                    
+                    int attempts = (int) session.getAttribute("attempts");
+                    if (attempts==3) {
+                        response.sendRedirect("cancellazione.html");
+                        return;
+                    }
+                    
+                    session.setAttribute("attempts", attempts+1);
+                    
+                    WebContext webContext = new WebContext(request, response, getServletContext(), request.getLocale());
+                    templateEngine.process("/anagrafica.html", webContext, response.getWriter());
+                    return;
+                }
+    
+                meetingDAO.createMeeting(title, date, hour, duration, maxParticipantsNumber, usernameCreator, usersChosen);
+            }
         } catch (SQLException e) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to create mission");
-            return;
-        }
-
-        // return the user to the right view
-        String ctxpath = getServletContext().getContextPath();
-        String path = ctxpath + "/Home";
-        response.sendRedirect(path);
-    }
-
-    public void destroy() {
-        try {
-            ConnectionHandler.closeConnection(connection);
-        } catch (SQLException e) {
             e.printStackTrace();
         }
+        
+        session.removeAttribute("meetingToCreate");
+        session.removeAttribute("usersChosen");
+        session.removeAttribute("attempts");
+        session.removeAttribute("users");
+        session.removeAttribute("errorMessage");
+        
+        response.sendRedirect("GetMeetings");
     }
-
 }
-

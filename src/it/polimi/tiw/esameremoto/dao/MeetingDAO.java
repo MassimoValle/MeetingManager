@@ -2,10 +2,7 @@ package it.polimi.tiw.esameremoto.dao;
 
 import it.polimi.tiw.esameremoto.beans.Meeting;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,7 +36,7 @@ public class MeetingDAO {
                     meeting.setIdMeeting(result.getInt("idMeeting"));
                     meeting.setHour(result.getTime("hour"));
                     meeting.setDate(result.getDate("date"));
-                    meeting.setDuration(result.getTime("duration"));
+                    meeting.setDuration(result.getInt("duration"));
                     meeting.setMaxParticipantsNumber(result.getInt("maxParticipantsNumber"));
                     meeting.setTitle(result.getString("title"));
                     meeting.setUsernameCreator(result.getString("usernameCreator"));
@@ -51,15 +48,45 @@ public class MeetingDAO {
         return meetings;
     }
 
-    public void createMeeting(String name, Date date, String description, String reporterId) throws SQLException {
+    public void createMeeting(String title, Date date, Time hour, int duration, int maxParticipantsNumber, String usernameCreator, ArrayList<String> usersChosen) throws SQLException {
 
-        String query = "INSERT into meetings (name, date, description, reporter) VALUES(?, ?, ?, ?)";
-        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
-            pstatement.setString(1, name);
-            pstatement.setDate(2, new java.sql.Date(date.getTime()));
-            pstatement.setString(3, description);
-            pstatement.setString(4, reporterId);
-            pstatement.executeUpdate();
+        String addMeetingQuery = "INSERT into db_meeting_manager_esame2020.meeting " +
+                "(hour, date, title, duration, maxParticipantsNumber, usernameCreator) VALUES(?, ?, ?, ?, ?, ?)";
+        String addParticipationQuery = "INSERT INTO db_meeting_manager_esame2020.participation " +
+                " VALUES (?, ?)";
+        
+        
+        try (PreparedStatement preparedStatement = connection.prepareStatement(addMeetingQuery)) {
+            preparedStatement.setTime(1, hour);
+            preparedStatement.setDate(2, new java.sql.Date(date.getTime()));
+            preparedStatement.setString(3, title);
+            preparedStatement.setInt(4, duration);
+            preparedStatement.setInt(5, maxParticipantsNumber);
+            preparedStatement.setString(6, usernameCreator);
+            preparedStatement.executeUpdate();
+        }
+        
+        try (PreparedStatement preparedStatement = connection.prepareStatement(addParticipationQuery)) {
+            Statement statement = connection.createStatement();
+            int idMeeting;
+    
+            try (ResultSet resultSet = statement.executeQuery("SELECT LAST_INSERT_ID()")) {
+                if (resultSet.next())
+                    idMeeting = resultSet.getInt("LAST_INSERT_ID()");
+                else
+                    throw new SQLException();
+            }
+            
+            preparedStatement.setInt(1, idMeeting);
+            preparedStatement.setString(2, usernameCreator);
+            preparedStatement.executeUpdate();
+    
+            if (usersChosen!=null) {
+                for (String userChosen: usersChosen){
+                    preparedStatement.setString(2, userChosen);
+                    preparedStatement.executeUpdate();
+                }
+            }
         }
     }
 }

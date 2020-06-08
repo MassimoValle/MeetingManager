@@ -2,10 +2,8 @@ package it.polimi.tiw.esameremoto.dao;
 
 import it.polimi.tiw.esameremoto.beans.User;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 
 public class UserDAO {
 	private final Connection connection;
@@ -37,6 +35,26 @@ public class UserDAO {
 		}
 	}
 
-
+	public ArrayList<User> getUsers() throws SQLException {
+		String query = "SELECT * FROM db_meeting_manager_esame2020.user";
+		ArrayList<User> users = new ArrayList<>();
+		
+		// try-catch with resources
+		try (Statement statement = connection.createStatement()) {
+			try (ResultSet resultSet = statement.executeQuery(query)) {
+				while (resultSet.next()){
+					User user = new User();
+					user.setUsername(resultSet.getString("username"));
+					user.setPassword(resultSet.getString("password"));
+					user.setName(resultSet.getString("name"));
+					user.setSurname(resultSet.getString("surname"));
+					user.setEmail(resultSet.getString("email"));
+					users.add(user);
+				}
+			}
+		}
+		
+		return users;
+	}
 
 }

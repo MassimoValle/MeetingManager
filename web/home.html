@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" type="text/css" media="all"
+      href="/style.css" th:href="@{/style.css}" />
 <head>
     <meta charset="UTF-8">
     <title>Home Page</title>
@@ -55,10 +57,10 @@
 
 <div>
     <p>Complete the form to create a meeting</p>
-    <form action="#" th:action="@{/CreateMeeting}" method="POST">
+    <form action="#" th:action="@{/PrepareMeetingCreation}" method="POST">
         <fieldset>
             <p>
-                Name: <input type="text" name="destination" required />
+                Title: <input type="text" name="title" required />
             </p>
             <p>
                 Date: <input type="date" name="date"
@@ -66,7 +68,13 @@
                              placeholder="yyyy-mm-dd" required />
             </p>
             <p>
-                Description: <input type="text" name="description" required />
+                Hour: <input type="time" name="hour" required />
+            </p>
+            <p>
+                Duration in minutes: <input type="number" name="duration" required />
+            </p>
+            <p>
+                Maximum number of participants <input type="number" name="maxParticipantsNumber" required />
             </p>
             <input type="submit" name="Create Meeting">
         </fieldset>
