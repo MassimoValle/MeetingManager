@@ -1,15 +1,11 @@
 package it.polimi.tiw.esameremoto.controllers;
 
 import it.polimi.tiw.esameremoto.beans.Meeting;
-import it.polimi.tiw.esameremoto.beans.User;
 import it.polimi.tiw.esameremoto.dao.MeetingDAO;
 import it.polimi.tiw.esameremoto.utils.ConnectionHandler;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -41,7 +37,7 @@ public class CreateMeeting extends HttpServlet {
     
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Object tempUsersChosen = session.getAttribute("usersChosen");
+        Object tempUsersChosen = session.getAttribute("usersChosenUsernames");
         MeetingDAO meetingDAO = new MeetingDAO(connection);
         ArrayList<String> usersChosen;
     
@@ -65,6 +61,11 @@ public class CreateMeeting extends HttpServlet {
                     
                     int attempts = (int) session.getAttribute("attempts");
                     if (attempts==3) {
+                        session.removeAttribute("meetingToCreate");
+                        session.removeAttribute("usersChosen");
+                        session.removeAttribute("attempts");
+                        session.removeAttribute("users");
+                        session.removeAttribute("errorMessage");
                         response.sendRedirect("cancellazione.html");
                         return;
                     }

@@ -20,8 +20,6 @@ import it.polimi.tiw.esameremoto.dao.MeetingDAO;
 import it.polimi.tiw.esameremoto.utils.ConnectionHandler;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 
 @WebServlet("/GetMeetings")
@@ -35,23 +33,19 @@ public class GetMeetings extends HttpServlet {
     }
 
     public void init() throws ServletException {
-        ServletContext servletContext = getServletContext();
-        ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-        templateResolver.setTemplateMode(TemplateMode.HTML);
-        this.templateEngine = new TemplateEngine();
-        this.templateEngine.setTemplateResolver(templateResolver);
-        templateResolver.setSuffix(".html");
+        this.templateEngine = ServletUtils.createThymeleafTemplate(getServletContext());
         connection = ConnectionHandler.getConnection(getServletContext());
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
-        User user = (User) request.getSession().getAttribute("user");
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
         MeetingDAO meetingDAO = new MeetingDAO(connection);
         List<Meeting> meetings;
 
         try {
-            meetings = meetingDAO.findMeetingsByUser(user.getUsername());
+            meetings = meetingDAO.findMeetingsNotExpiredByUser(user.getUsername());
         } catch (SQLException e) {
             // for debugging only e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover missions");
@@ -72,9 +66,15 @@ public class GetMeetings extends HttpServlet {
                 othersMeetings.add(meeting);
         }
         
-        //TODO le riunioni da mostrare non devono essere ancora scadute
         webContext.setVariable("myMeetings", myMeetings);
         webContext.setVariable("othersMeetings", othersMeetings);
+        
+        String errorMessage = (String) session.getAttribute("errorMessage");
+        if (errorMessage!=null) {
+            webContext.setVariable("errorMessage", errorMessage);
+            session.removeAttribute("errorMessage");
+        }
+        
         templateEngine.process(path, webContext, response.getWriter());
     }
 

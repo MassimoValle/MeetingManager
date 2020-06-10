@@ -15,7 +15,7 @@ public class MeetingDAO {
         this.connection = connection;
     }
 
-    public List<Meeting> findMeetingsByUser(String username) throws SQLException {
+    public List<Meeting> findMeetingsNotExpiredByUser(String username) throws SQLException {
 
         List<Meeting> meetings = new ArrayList<>();
 
@@ -25,7 +25,8 @@ public class MeetingDAO {
                         "SELECT idMeeting " +
                         "FROM participation " +
                         "WHERE username = ?" +
-                        ")";
+                        ")" +
+                        "AND meeting.date > current_date";
         
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, username);

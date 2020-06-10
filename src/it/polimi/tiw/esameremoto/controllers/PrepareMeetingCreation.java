@@ -42,7 +42,7 @@ public class PrepareMeetingCreation extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Object tempUsersChosen = session.getAttribute("usersChosen");
+        Object tempUsersChosen = session.getAttribute("usersChosenUsernames");
         ArrayList<String> usersChosen;
         
         if (tempUsersChosen==null)
@@ -56,7 +56,7 @@ public class PrepareMeetingCreation extends HttpServlet {
         else
             usersChosen.add(request.getParameter("username"));
         
-        session.setAttribute("usersChosen", usersChosen);
+        session.setAttribute("usersChosenUsernames", usersChosen);
     
         WebContext webContext = new WebContext(request, response, getServletContext(), request.getLocale());
         templateEngine.process("/anagrafica.html", webContext, response.getWriter());
@@ -80,15 +80,18 @@ public class PrepareMeetingCreation extends HttpServlet {
             hour = Time.valueOf(request.getParameter("hour")+":00");
             duration = Integer.parseInt(request.getParameter("duration"));
             maxParticipantsNumber = Integer.parseInt(request.getParameter("maxParticipantsNumber"));
+            
+            Date todayDate = simpleDateFormat.parse(simpleDateFormat.format(new Date()));
 
-            isBadRequest = title.isEmpty() || date==null || hour==null || duration==null || maxParticipantsNumber==null;
+            isBadRequest = title==null || title.isEmpty() || date == null || date.before(todayDate);
 
-        } catch (NumberFormatException | NullPointerException | ParseException e) {
+        } catch (IllegalArgumentException | NullPointerException | ParseException e) {
             isBadRequest = true;
             e.printStackTrace();
         }
         if (isBadRequest) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect or missing param values");
+            request.getSession().setAttribute("errorMessage", "Ops! Qualcosa e' andato storto. Ricompilare il form.");
+            response.sendRedirect("GetMeetings");
             return;
         }
     

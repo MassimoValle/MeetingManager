@@ -76,9 +76,14 @@
             <p>
                 Maximum number of participants <input type="number" name="maxParticipantsNumber" required />
             </p>
-            <input type="submit" name="Create Meeting">
+            <input type="submit" name="INVIA">
         </fieldset>
     </form>
+    <br>
+    <h3 class="errorMessage"
+        th:if="${errorMessage!=null}" th:text="${errorMessage}">
+
+        Errore nel caso non si inseriscono tutti i parametri</h3>
 </div>
 
 </body>
