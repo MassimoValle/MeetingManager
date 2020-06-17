@@ -1,4 +1,4 @@
-package it.polimi.tiw.esameremoto.controllers;
+package it.polimi.tiw.esameremoto.utils;
 
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;

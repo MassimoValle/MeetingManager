@@ -18,6 +18,7 @@ import it.polimi.tiw.esameremoto.beans.Meeting;
 import it.polimi.tiw.esameremoto.beans.User;
 import it.polimi.tiw.esameremoto.dao.MeetingDAO;
 import it.polimi.tiw.esameremoto.utils.ConnectionHandler;
+import it.polimi.tiw.esameremoto.utils.ServletUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 
@@ -38,17 +39,18 @@ public class GetMeetings extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
+
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         MeetingDAO meetingDAO = new MeetingDAO(connection);
         List<Meeting> meetings;
 
+
         try {
             meetings = meetingDAO.findMeetingsNotExpiredByUser(user.getUsername());
         } catch (SQLException e) {
             // for debugging only e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover missions");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover meetings");
             return;
         }
 
@@ -56,7 +58,7 @@ public class GetMeetings extends HttpServlet {
         String path = "/home.html";
         ServletContext servletContext = getServletContext();
         final WebContext webContext = new WebContext(request, response, servletContext, request.getLocale());
-    
+
         ArrayList<Meeting> myMeetings = new ArrayList<>();
         ArrayList<Meeting> othersMeetings = new ArrayList<>();
         for (Meeting meeting : meetings){
@@ -76,6 +78,7 @@ public class GetMeetings extends HttpServlet {
         }
         
         templateEngine.process(path, webContext, response.getWriter());
+
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

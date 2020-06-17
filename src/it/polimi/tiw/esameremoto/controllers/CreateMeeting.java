@@ -3,6 +3,7 @@ package it.polimi.tiw.esameremoto.controllers;
 import it.polimi.tiw.esameremoto.beans.Meeting;
 import it.polimi.tiw.esameremoto.dao.MeetingDAO;
 import it.polimi.tiw.esameremoto.utils.ConnectionHandler;
+import it.polimi.tiw.esameremoto.utils.ServletUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 
@@ -36,6 +37,7 @@ public class CreateMeeting extends HttpServlet {
     }
     
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println("doGet CreateMeeting");
         HttpSession session = request.getSession();
         Object tempUsersChosen = session.getAttribute("usersChosenUsernames");
         MeetingDAO meetingDAO = new MeetingDAO(connection);

@@ -4,6 +4,7 @@ import it.polimi.tiw.esameremoto.beans.Meeting;
 import it.polimi.tiw.esameremoto.beans.User;
 import it.polimi.tiw.esameremoto.dao.UserDAO;
 import it.polimi.tiw.esameremoto.utils.ConnectionHandler;
+import it.polimi.tiw.esameremoto.utils.ServletUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 

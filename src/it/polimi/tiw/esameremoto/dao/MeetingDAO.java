@@ -15,6 +15,34 @@ public class MeetingDAO {
         this.connection = connection;
     }
 
+    public Meeting findMeetingById(Integer id) throws SQLException{
+
+        Meeting meeting = null;
+
+        String query =
+                "SELECT * FROM db_meeting_manager_esame2020.meeting " +
+                        "WHERE idMeeting = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, id.toString());
+
+            try (ResultSet result = preparedStatement.executeQuery()) {
+                while (result.next()) {
+                    meeting = new Meeting();
+                    meeting.setIdMeeting(result.getInt("idMeeting"));
+                    meeting.setHour(result.getTime("hour"));
+                    meeting.setDate(result.getDate("date"));
+                    meeting.setDuration(result.getInt("duration"));
+                    meeting.setMaxParticipantsNumber(result.getInt("maxParticipantsNumber"));
+                    meeting.setTitle(result.getString("title"));
+                    meeting.setUsernameCreator(result.getString("usernameCreator"));
+                }
+            }
+        }
+
+        return meeting;
+    }
+
     public List<Meeting> findMeetingsNotExpiredByUser(String username) throws SQLException {
 
         List<Meeting> meetings = new ArrayList<>();

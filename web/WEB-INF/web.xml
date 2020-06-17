@@ -6,7 +6,7 @@
 
     <context-param>
         <param-name>dbUrl</param-name>
-        <param-value>jdbc:mysql://localhost:3306/db_meeting_manager_ESAME2020</param-value>
+        <param-value>jdbc:mysql://localhost:3306/db_meeting_manager_ESAME2020?useUnicode=true&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC</param-value>
     </context-param>
     <context-param>
         <param-name>dbUser</param-name>
@@ -14,7 +14,8 @@
     </context-param>
     <context-param>
         <param-name>dbPassword</param-name>
-        <param-value>???drowssap!!!</param-value>
+        <param-value>root1234</param-value>
+        <!--<param-value>???drowssap!!!</param-value>-->
     </context-param>
     <context-param>
         <param-name>dbDriver</param-name>
@@ -33,5 +34,8 @@
         <url-pattern>/anagrafica.html</url-pattern>
         <url-pattern>/CreateMeeting</url-pattern>
         <url-pattern>/cancellazione.html</url-pattern>
+        <url-pattern>/GetMeetingDetails</url-pattern>
+        <url-pattern>/meetingDetails.html</url-pattern>
     </filter-mapping>
+
 </web-app>
