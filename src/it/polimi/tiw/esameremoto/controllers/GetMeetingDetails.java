@@ -16,6 +16,7 @@ import it.polimi.tiw.esameremoto.beans.Meeting;
 import it.polimi.tiw.esameremoto.beans.User;
 import it.polimi.tiw.esameremoto.dao.MeetingDAO;
 import it.polimi.tiw.esameremoto.utils.ConnectionHandler;
+import it.polimi.tiw.esameremoto.utils.ServletUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -33,13 +34,7 @@ public class GetMeetingDetails extends HttpServlet {
 	}
 
 	public void init() throws ServletException {
-		ServletContext servletContext = getServletContext();
-		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
-
+		this.templateEngine = ServletUtils.createThymeleafTemplate(getServletContext());
 		connection = ConnectionHandler.getConnection(getServletContext());
 	}
 
