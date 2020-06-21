@@ -3,8 +3,8 @@
 <head>
 	<meta charset="ISO-8859-1">
 	<title>Login page</title>
-	<script src="WEB-INF/js/utils.js" charset="utf-8" defer></script>
-	<script src="WEB-INF/js/loginManagement.js" charset="utf-8" defer></script>
+	<script src="js/utils.js" charset="utf-8" defer></script>
+	<script src="js/loginManagement.js" charset="utf-8" defer></script>
 
 	<link rel="stylesheet" type="text/css" media="all" href="/style.css"/>
 </head>
@@ -14,18 +14,13 @@
 		<h1>Welcome to the meeting management application</h1>
 
 		<h2>Login</h2>
-		<form action="#">
-			Username: <input type="text" name="username" required> <br>
-			Password: <input type="password" name="password" required><br>
-			<input id="loginbutton" type="button" value="login">
-			<p id="errormessage"></p>
-		</form>
-
-		<h2>Registrazione</h2>
 		<form>
 			Username: <input type="text" name="username" required> <br>
 			Password: <input type="password" name="password" required><br>
-			<input id="regbutton" type="button" value="login">
+			<input id="loginbutton" type="button" value="login">
+			<p id="errorMessageLogin" class="errorMessage"></p>
+			<br>
+			<h4><a href="registration.html">Sign up</a></h4>
 		</form>
 
 	</span>

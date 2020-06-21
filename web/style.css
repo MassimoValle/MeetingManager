@@ -7,7 +7,7 @@ table, td, th {
     background-color: aquamarine;
 }
 
-.errorMessage {
+.errorMessage, .boldRed {
     color: red;
     font-weight: bold;
 }
