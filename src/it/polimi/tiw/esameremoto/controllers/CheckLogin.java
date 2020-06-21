@@ -29,11 +29,9 @@ public class CheckLogin extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private Connection connection = null;
-    private TemplateEngine templateEngine;
 
 
     public void init() throws ServletException {
-        this.templateEngine = ServletUtils.createThymeleafTemplate(getServletContext());
         connection = ConnectionHandler.getConnection(getServletContext());
     }
 
@@ -43,7 +41,6 @@ public class CheckLogin extends HttpServlet {
         // obtain and escape params
         String username;
         String password;
-        String path;
 
         try {
             username = request.getParameter("username");
@@ -51,12 +48,12 @@ public class CheckLogin extends HttpServlet {
 
             if (username==null || password==null) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                invalidCredentials("Credentials can't be null", request, response);
+                response.getWriter().println("Credentials can't be null");
                 return;
             }
             else if(username.isEmpty() || password.isEmpty()) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                invalidCredentials("Credentials can't be empty.", request, response);
+                response.getWriter().println("Credentials can't be empty");
                 return;
             }
 
@@ -73,7 +70,8 @@ public class CheckLogin extends HttpServlet {
         try {
             user = userDao.checkUser(username, password);
         } catch (SQLException e) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not Possible to check credentials");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("Internal server error, retry later");
             return;
         }
 
@@ -82,15 +80,18 @@ public class CheckLogin extends HttpServlet {
         // show login page with error message
 
         if (user == null) {
-            invalidCredentials("Incorrect username or password", request, response);
-            return;
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().println("Incorrect credentials");
+        } else {
+            request.getSession().setAttribute("user", user);
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().println(username);
         }
-
-        request.getSession().setAttribute("user", user);
-        path = getServletContext().getContextPath() + "/GetMeetings";	//va alla GetMeetings Servlets
-        response.sendRedirect(path);
     }
 
+    /*
     private void invalidCredentials(String errorMessage, HttpServletRequest request, HttpServletResponse response) throws IOException {
         String path = "/index.html";
         ServletContext servletContext = getServletContext();
@@ -98,6 +99,7 @@ public class CheckLogin extends HttpServlet {
         webContext.setVariable("errorMessage", errorMessage);
         templateEngine.process(path, webContext, response.getWriter());
     }
+     */
 
     public void destroy() {
         try {

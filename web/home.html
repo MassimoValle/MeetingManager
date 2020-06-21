@@ -1,71 +1,87 @@
 <!DOCTYPE html>
-<html lang="en"  xmlns:th="http://www.thymeleaf.org">
-<link rel="stylesheet" type="text/css" media="all"
-      href="/style.css" th:href="@{/style.css}" />
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Home Page</title>
+    <script src="utils.js" charset="utf-8" defer></script>
+    <script src="WEB-INF/js/utils.js" charset="utf-8" defer></script>
+    <script src="WEB-INF/js/meetingsManagement.js" charset="utf-8" defer></script>
+    <script src="WEB-INF/js/pageOrchestrator.js" charset="utf-8" defer></script>
+
+    <link rel="stylesheet" type="text/css" media="all" href="/style.css"/>
 </head>
 <body>
 
 <div align="right">
-    <a th:href="@{/Logout}">Logout</a>
+    <a href="Logout">Logout</a>
 </div>
 <h1>Welcome to the Meeting Mamagement Home Page</h1>
-<p th:text="${'Nice to see you again ' + session.user.name + ' ' + session.user.surname}"></p>
+<p>Nice to see you again <span id="id_username"></span></p>
 
 
 <h2>My Meetings:</h2>
-<table>
+<table id="id_myMeetings" class="boxed">
+    <thead>
+        <tr>
+            <th class="sortable">Meeting</th>
+            <th class="sortable">Date</th>
+            <th class="sortable">Starting hour</th>
+            <th>Link</th>
+        </tr>
+    </thead>
+    <tbody id="id_myMeetingsBody"></tbody>
+</table>
+
+
+
+<!-- DETAILS -->
+<table id="id_meetingDetail" class="boxed">
     <thead>
     <tr>
-        <th>Meeting</th>
+        <th>Title</th>
         <th>Date</th>
-        <th>Starting hour</th>
-        <th>Link</th>
+        <th>Hour</th>
+        <th>Duration</th>
+        <th>Patecipants</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="myMeeting : ${myMeetings}">
-        <td th:text="${myMeeting.title}"></td>
-        <td th:text="${myMeeting.date}"></td>
-        <td th:text="${myMeeting.hour}"></td>
-        <td><a th:href="@{/GetMeetingDetails(meetingId=${myMeeting.idMeeting})}">Details</a></td>
+    <tr>
+        <td id="id_title"></td>
+        <td id="id_date"></td>
+        <td id="id_hour"></td>
+        <td id="id_duration"></td>
+        <td id="id_partecipants"></td>
     </tr>
     </tbody>
 </table>
 
+
 <h2>Others Meetings:</h2>
-<table>
+<table id="id_otherMeetings" class="boxed">
     <thead>
     <tr>
-        <th>Meeting</th>
-        <th>Date</th>
-        <th>Starting hour</th>
+        <th class="sortable">Meeting</th>
+        <th class="sortable">Date</th>
+        <th class="sortable">Starting hour</th>
         <th>Link</th>
     </tr>
     </thead>
-    <tbody>
-    <tr th:each="othersMeeting : ${othersMeetings}">
-        <td th:text="${othersMeeting.title}"></td>
-        <td th:text="${othersMeeting.date}"></td>
-        <td th:text="${othersMeeting.hour}"></td>
-        <td><a th:href="@{/GetMeetingDetails(meetingId=${othersMeeting.idMeeting})}">Details</a></td>
-    </tr>
-    </tbody>
+    <tbody id="id_otherMeetingsBody"></tbody>
 </table>
+
+
+
 
 <div>
     <p>Complete the form to create a meeting</p>
-    <form action="#" th:action="@{/PrepareMeetingCreation}" method="POST">
+    <form id="id_createmissionform" action="#">
         <fieldset>
             <p>
                 Title: <input type="text" name="title" required />
             </p>
             <p>
-                Date: <input type="date" name="date"
-                             th:attr="min=${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}"
-                             placeholder="yyyy-mm-dd" required />
+                Date: <input type="date" name="date" required><br>
             </p>
             <p>
                 Hour: <input type="time" name="hour" required />
@@ -76,14 +92,10 @@
             <p>
                 Maximum number of participants <input type="number" name="maxParticipantsNumber" required />
             </p>
-            <input type="submit" name="INVIA">
+            <input type="button" value="INVIA" name="submit" class="submit">
         </fieldset>
     </form>
     <br>
-    <h3 class="errorMessage"
-        th:if="${errorMessage!=null}" th:text="${errorMessage}">
-
-        Errore nel caso non si inseriscono tutti i parametri</h3>
 </div>
 
 </body>
