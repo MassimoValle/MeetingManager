@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,19 +13,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import it.polimi.tiw.esameremoto.beans.Meeting;
 import it.polimi.tiw.esameremoto.beans.User;
 import it.polimi.tiw.esameremoto.dao.MeetingDAO;
 import it.polimi.tiw.esameremoto.utils.ConnectionHandler;
-import it.polimi.tiw.esameremoto.utils.ServletUtils;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
 
 
 @WebServlet("/GetMeetings")
 public class GetMeetings extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private TemplateEngine templateEngine;
     private Connection connection = null;
 
     public GetMeetings() {
@@ -34,7 +31,6 @@ public class GetMeetings extends HttpServlet {
     }
 
     public void init() throws ServletException {
-        this.templateEngine = ServletUtils.createThymeleafTemplate(getServletContext());
         connection = ConnectionHandler.getConnection(getServletContext());
     }
 
@@ -49,15 +45,11 @@ public class GetMeetings extends HttpServlet {
         try {
             meetings = meetingDAO.findMeetingsNotExpiredByUser(user.getUsername());
         } catch (SQLException e) {
-            // for debugging only e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover meetings");
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("Not possible to recover meetings");
             return;
         }
-
-        // Redirect to the Home page and add missions to the parameters
-        String path = "/home.html";
-        ServletContext servletContext = getServletContext();
-        final WebContext webContext = new WebContext(request, response, servletContext, request.getLocale());
 
         ArrayList<Meeting> myMeetings = new ArrayList<>();
         ArrayList<Meeting> othersMeetings = new ArrayList<>();
@@ -67,17 +59,16 @@ public class GetMeetings extends HttpServlet {
             else
                 othersMeetings.add(meeting);
         }
-        
-        webContext.setVariable("myMeetings", myMeetings);
-        webContext.setVariable("othersMeetings", othersMeetings);
-        
-        String errorMessage = (String) session.getAttribute("errorMessage");
-        if (errorMessage!=null) {
-            webContext.setVariable("errorMessage", errorMessage);
-            session.removeAttribute("errorMessage");
-        }
-        
-        templateEngine.process(path, webContext, response.getWriter());
+
+
+        Gson gson = new GsonBuilder().setDateFormat("yyyy MMM dd").create();
+        String json_myMeetings = gson.toJson(myMeetings);
+        String json_othersMeetings = gson.toJson(othersMeetings);
+
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(json_myMeetings + '#' + json_othersMeetings);
 
     }
 
