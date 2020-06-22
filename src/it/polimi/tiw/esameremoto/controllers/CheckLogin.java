@@ -81,17 +81,7 @@ public class CheckLogin extends HttpServlet {
             response.getWriter().println(username);
         }
     }
-
-    /*
-    private void invalidCredentials(String errorMessage, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String path = "/index.html";
-        ServletContext servletContext = getServletContext();
-        final WebContext webContext = new WebContext(request, response, servletContext, request.getLocale());
-        webContext.setVariable("errorMessage", errorMessage);
-        templateEngine.process(path, webContext, response.getWriter());
-    }
-     */
-
+    
     public void destroy() {
         try {
             ConnectionHandler.closeConnection(connection);
@@ -99,6 +89,4 @@ public class CheckLogin extends HttpServlet {
             e.printStackTrace();
         }
     }
-
-
 }

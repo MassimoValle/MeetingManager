@@ -56,5 +56,32 @@ public class UserDAO {
 		
 		return users;
 	}
-
+	
+	public boolean checkUsername(String username) throws SQLException {
+		String query = "SELECT * FROM db_meeting_manager_esame2020.user WHERE username=?";
+		
+		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			preparedStatement.setString(1, username);
+			
+			try (ResultSet result = preparedStatement.executeQuery()) {
+				
+				return result.next();
+				
+			}
+		}
+	}
+	
+	public void insertUser(User user) throws SQLException {
+		String query = "INSERT INTO db_meeting_manager_esame2020.user VALUES (?,?,?,?,?)";
+		
+		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			preparedStatement.setString(1, user.getUsername());
+			preparedStatement.setString(2, user.getName());
+			preparedStatement.setString(3, user.getSurname());
+			preparedStatement.setString(4, user.getEmail());
+			preparedStatement.setString(5, user.getPassword());
+			
+			preparedStatement.executeUpdate();
+		}
+	}
 }

@@ -15,21 +15,20 @@
                         switch (req.status) {
                             case 200:
                                 sessionStorage.setItem('username', message);
-                                window.location.href = "home.html";
+                                window.location.href = "Home.html";
                                 break;
                             case 400: // bad request
-                                document.getElementById("errormessage").textContent = message;
+                                document.getElementById("errorMessageLogin").textContent = message;
                                 break;
                             case 401: // unauthorized
-                                document.getElementById("errormessage").textContent = message;
+                                document.getElementById("errorMessageLogin").textContent = message;
                                 break;
                             case 500: // server error
-                                document.getElementById("errormessage").textContent = message;
+                                document.getElementById("errorMessageLogin").textContent = message;
                                 break;
                         }
                     }
-                }
-            );
+                }, false);
         } else {
             form.reportValidity();
         }
