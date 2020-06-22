@@ -3,6 +3,10 @@
     // page components
     var missionDetails, missionsList, wizard, pageOrchestrator;// = new PageOrchestrator(); // main controller
 
+    var myMeetings = null;
+    var otherMeetings = null;
+
+
     window.addEventListener("load", () => {
         pageOrchestrator = new PageOrchestrator();
         pageOrchestrator.start(); // initialize the components
@@ -30,12 +34,19 @@
 
         this.show = function(next) {
             var self = this;
+
+            if(otherMeetings !== null){
+                self.update(JSON.parse(otherMeetingList));
+                return;
+            }
+
             makeCall("GET", "GetMeetings", null,
                 function(req) {
                     if (req.readyState == 4) {
                         var message = req.responseText;
                         if (req.status == 200) {
                             self.splitResponse(req.responseText);
+                            self.update(JSON.parse(myMeetings));
                             //self.update(JSON.parse(req.responseText)); // self visible by
                             // closure
                             if (next) next(); // show the first element of the list
@@ -49,12 +60,12 @@
 
 
         this.splitResponse = function (res) {
-            meetings = res.split('#');
+            let allMeetings = res.split('#');
 
-            myMeetings = meetings[0];
-            otherMeetings = meetings[1];
+            myMeetings = allMeetings[0];
+            otherMeetings = allMeetings[1];
 
-            self.update(JSON.parse(myMeetings));
+            //self.update(JSON.parse(myMeetings));
 
         }
 
@@ -133,10 +144,16 @@
             personalMessage.show();
 
 
-            meetingList = new MeetingsList(
+            myMeetingList = new MeetingsList(
                 alertContainer,
                 document.getElementById("id_myMeetings"),
                 document.getElementById("id_myMeetingsBody"));
+
+
+            otherMeetingList = new MeetingsList(
+                alertContainer,
+                document.getElementById("id_otherMeetings"),
+                document.getElementById("id_otherMeetingsBody"));
 
 
 
@@ -168,11 +185,13 @@
 
 
         this.refresh = function(currentMeeting) {
-            meetingList.reset();
+            myMeetingList.reset();
+            otherMeetingList.reset();
+
+            myMeetingList.show();
+            otherMeetingList.show();
             //missionDetails.reset();
-            meetingList.show(function() {
-                meetingList.autoclick(currentMeeting);
-            }); // closure preserves visibility of this
+            //meetingList.show(function() {meetingList.autoclick(currentMeeting);}); // closure preserves visibility of this
             //wizard.reset();
         };
     }
