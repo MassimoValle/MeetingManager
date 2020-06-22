@@ -136,32 +136,7 @@
                 document.getElementById("id_myMeetings"),
                 document.getElementById("id_myMeetingsBody"));
 
-
-
-
-            wizard = new Wizard({ // many parameters, wrap them in an
-                // object
-                alert: alertContainer,
-                detailcontainer: document.getElementById("id_detailcontainer"),
-                expensecontainer: document.getElementById("id_expensecontainer"),
-                expenseform: document.getElementById("id_expenseform"),
-                closeform: document.getElementById("id_closeform"),
-                date: document.getElementById("id_date"),
-                destination: document.getElementById("id_destination"),
-                status: document.getElementById("id_status"),
-                description: document.getElementById("id_description"),
-                country: document.getElementById("id_country"),
-                province: document.getElementById("id_province"),
-                city: document.getElementById("id_city"),
-                fund: document.getElementById("id_fund"),
-                food: document.getElementById("id_food"),
-                accomodation: document.getElementById("id_accomodation"),
-                transportation: document.getElementById("id_transportation")
-            });
-            missionDetails.registerEvents(this);
-
-            //wizard = new Wizard(document.getElementById("id_createmissionform"), alertContainer);
-            //wizard.registerEvents(this);
+            createMeetingForm = new CreateMeetingForm(document.getElementById("id_createMissionForm"));
         };
 
 
@@ -193,26 +168,79 @@
             if (this.form.checkValidity()){
                 this.form.hidden = true;
 
-                //TODO crea la nuova pagina con tutti gli utenti
+                //TODO crea la nuova tabella con tutti gli utenti
             }
             else
                 this.form.reportValidity();
         }));
 
         this.showParticipants = function () {
+            let chooseMeetingParticipants;
+            let self = this;
+
             makeCall("GET", "GetParticipants", null,
                 function (request) {
                     if (request.readyState === XMLHttpRequest.DONE){
-
+                        switch (request.status) {
+                            case 200:
+                                let usernamesParticipants = JSON.parse(request.responseText);
+                                chooseMeetingParticipants = new ChooseMeetingParticipants(usernamesParticipants);
+                                chooseMeetingParticipants.show();
+                                break;
+                            case 500:
+                                let errorMessage = request.responseText;
+                                self.form.hidden = false;
+                                self.form.reset();
+                                self.form.querySelector('p.errorMessage').textContent = errorMessage;
+                                break;
+                        }
                     }
                 }, false);
-
-            let chooseMeetingParticipants = new ChooseMeetingParticipants(_participants);
         }
     }
 
-    function ChooseMeetingParticipants(_participants) {
+    function ChooseMeetingParticipants(_usernamesParticipants) {
+        this.table = document.getElementById("chooseParticipantsTable");
+        this.usernamesParticipants = _usernamesParticipants;
+        let self = this;
 
+        function show() {
+            let length = self.usernamesParticipants.length;
+
+            if (length <= 1){
+                self.table.querySelector("h5.errorMessage").textContent = "There aren't users yet.";
+            }
+            else {
+                let tbody = document.querySelector("#chooseParticipantsTable tbody");
+                let tr, td, anchor;
+
+                tbody.innerHTML = "";
+
+                self.usernamesParticipants.forEach(function(usernameParticipant) { // self visible here, not this
+                    // The user of the session is not displayed
+
+                    if (!usernameParticipant.toString().localeCompare(sessionStorage.getItem("username").toString())) {
+                        tr = document.createElement("tr");
+                        td = document.createElement("td");
+
+                        anchor = document.createElement("a");
+                        anchor.textContent = usernameParticipant;
+                        anchor.href = "#";
+
+                        td.appendChild(anchor);
+                        tr.appendChild(td);
+                        tbody.appendChild(tr);
+
+                        anchor.addEventListener("click", (event => {
+                            if (td.className === "userChosen")
+                                td.removeClass("userChosen");
+                            else
+                                td.addClass("userChosen");
+                        }))
+                    }
+                });
+            }
+        }
     }
 
 })();

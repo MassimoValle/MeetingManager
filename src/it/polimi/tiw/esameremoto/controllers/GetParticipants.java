@@ -1,5 +1,7 @@
 package it.polimi.tiw.esameremoto.controllers;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import it.polimi.tiw.esameremoto.beans.User;
 import it.polimi.tiw.esameremoto.dao.UserDAO;
 import it.polimi.tiw.esameremoto.utils.ConnectionHandler;
@@ -29,14 +31,22 @@ public class GetParticipants extends HttpServlet {
     
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         UserDAO userDAO = new UserDAO(connection);
-        ArrayList<User> users;
+        ArrayList<String> usernames = new ArrayList<>();
         
         try {
-            users = userDAO.getUsers();
+            usernames = userDAO.getUsernames();
         } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("Internal server error: SQLException when getting usernames.");
             e.printStackTrace();
         }
         
-        
+        Gson gson = new GsonBuilder().setDateFormat("yyyy MMM dd").create();
+        String json_users = gson.toJson(usernames);
+    
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(json_users);
     }
 }

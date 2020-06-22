@@ -57,6 +57,23 @@ public class UserDAO {
 		return users;
 	}
 	
+	public ArrayList<String> getUsernames() throws SQLException {
+		String query = "SELECT username FROM db_meeting_manager_esame2020.user";
+		ArrayList<String> usernames = new ArrayList<>();
+		
+		// try-catch with resources
+		try (Statement statement = connection.createStatement()) {
+			try (ResultSet resultSet = statement.executeQuery(query)) {
+				while (resultSet.next()){
+					String username = resultSet.getString("username");
+					usernames.add(username);
+				}
+			}
+		}
+		
+		return usernames;
+	}
+	
 	public boolean checkUsername(String username) throws SQLException {
 		String query = "SELECT * FROM db_meeting_manager_esame2020.user WHERE username=?";
 		

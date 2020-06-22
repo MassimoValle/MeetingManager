@@ -75,7 +75,7 @@
 
 <div class="right">
     <p>Complete the form to create a meeting</p>
-    <form id="id_createmissionform" action="#">
+    <form id="id_createMissionForm" action="#">
         <fieldset>
             <p>
                 Title: <input type="text" name="title" required />
@@ -93,10 +93,24 @@
                 Maximum number of participants <input type="number" name="maxParticipantsNumber" required />
             </p>
             <input type="button" value="INVIA" name="submit" class="submit">
+            <p class="errorMessage"></p>
         </fieldset>
     </form>
     <br>
 </div>
+
+<p>Choose the participants</p>
+<table id="chooseParticipantsTable">
+    <thead>
+    <tr>
+        <th>USERS</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<br>
+<h5 class="errorMessage"></h5>
 
 </body>
 </html>
