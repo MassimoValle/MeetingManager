@@ -4,27 +4,20 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-// import it.polimi.tiw.esameremoto
 import it.polimi.tiw.esameremoto.beans.User;
 import it.polimi.tiw.esameremoto.dao.UserDAO;
 import it.polimi.tiw.esameremoto.utils.ConnectionHandler;
 
-// import thymeleaf
-import it.polimi.tiw.esameremoto.utils.ServletUtils;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
-
 @WebServlet("/CheckLogin")
+@MultipartConfig
 public class CheckLogin extends HttpServlet {
 
     private static final long serialVersionUID = 1L;

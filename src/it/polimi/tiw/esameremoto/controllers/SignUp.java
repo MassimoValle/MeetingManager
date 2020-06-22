@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -28,12 +29,12 @@ public class SignUp extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = new User();
         
-        String username = (String) request.getAttribute("username");
-        String email = (String) request.getAttribute("email");
-        String name = (String) request.getAttribute("name");
-        String surname = (String) request.getAttribute("surname");
-        String firstPassword = (String) request.getAttribute("firstPassword");
-        String secondPassword = (String) request.getAttribute("secondPassword");
+        String username = request.getParameter("username");
+        String email = request.getParameter("email");
+        String name = request.getParameter("name");
+        String surname = request.getParameter("surname");
+        String firstPassword = request.getParameter("firstPassword");
+        String secondPassword = request.getParameter("secondPassword");
         
         if (username==null || username.isEmpty()
                 || email==null || email.isEmpty()
@@ -75,6 +76,10 @@ public class SignUp extends HttpServlet {
             user.setPassword(firstPassword);
         
             userDAO.insertUser(user);
+            
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().println(username);
+            request.getSession().setAttribute("user", user);
             
         } catch (SQLException e) {
             e.printStackTrace();

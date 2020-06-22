@@ -11,3 +11,7 @@ table, td, th {
     color: red;
     font-weight: bold;
 }
+
+.right {
+    margin-right: 5%;
+}

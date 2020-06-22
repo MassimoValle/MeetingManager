@@ -6,9 +6,8 @@
     <script src="js/utils.js" charset="utf-8" defer></script>
     <script src="js/utils.js" charset="utf-8" defer></script>
     <script src="js/meetingsManagement.js" charset="utf-8" defer></script>
-    <script src="js/pageOrchestrator.js" charset="utf-8" defer></script>
 
-    <link rel="stylesheet" type="text/css" media="all" href="/style.css"/>
+    <link rel="stylesheet" type="text/css" media="all" href="style.css"/>
 </head>
 <body>
 
@@ -17,6 +16,7 @@
 </div>
 <h1>Welcome to the Meeting Mamagement Home Page</h1>
 <p>Nice to see you again <span id="id_username"></span></p>
+<div id="id_alert" class="alertmessage"></div>
 
 
 <h2>My Meetings:</h2>
@@ -73,7 +73,7 @@
 
 
 
-<div>
+<div class="right">
     <p>Complete the form to create a meeting</p>
     <form id="id_createmissionform" action="#">
         <fieldset>
@@ -87,7 +87,7 @@
                 Hour: <input type="time" name="hour" required />
             </p>
             <p>
-                Duration in minutes: <input type="number" name="duration" required />
+                Duration in minutes: <input type="number" name="duration" required  />
             </p>
             <p>
                 Maximum number of participants <input type="number" name="maxParticipantsNumber" required />

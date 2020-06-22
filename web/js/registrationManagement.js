@@ -1,6 +1,6 @@
 (function(){
 
-    document.getElementById("registrationButton").addEventListener("click", (event) => {
+    document.getElementById("registrationButton").addEventListener("submit", (event) => {
         event.preventDefault();
         var form = event.target.closest("form");
 
@@ -25,7 +25,7 @@
                                 break;
                         }
                     }
-                }, true);
+                }, false);
         }
         else if (firstPassword.localeCompare(secondPassword)!==0)
             document.getElementById("errorMessageRegistration").textContent = "Passwords aren't equals, try again";
