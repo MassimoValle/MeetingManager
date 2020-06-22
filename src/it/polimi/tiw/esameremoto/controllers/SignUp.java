@@ -28,12 +28,12 @@ public class SignUp extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = new User();
         
-        String username = (String) request.getAttribute("username");
-        String email = (String) request.getAttribute("email");
-        String name = (String) request.getAttribute("name");
-        String surname = (String) request.getAttribute("surname");
-        String firstPassword = (String) request.getAttribute("firstPassword");
-        String secondPassword = (String) request.getAttribute("secondPassword");
+        String username = (String) request.getParameter("username");
+        String email = (String) request.getParameter("email");
+        String name = (String) request.getParameter("name");
+        String surname = (String) request.getParameter("surname");
+        String firstPassword = (String) request.getParameter("firstPassword");
+        String secondPassword = (String) request.getParameter("secondPassword");
         
         if (username==null || username.isEmpty()
                 || email==null || email.isEmpty()
