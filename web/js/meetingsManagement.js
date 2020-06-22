@@ -1,12 +1,14 @@
 (function () {
 
     // page components
-    var missionDetails, missionsList, wizard, pageOrchestrator;// = new PageOrchestrator(); // main controller
+    var meetingDetails
+    var pageOrchestrator;
+    var myMeetings;
+    var otherMeetings;
 
-    var myMeetings = null;
-    var otherMeetings = null;
 
 
+    // load event
     window.addEventListener("load", () => {
         pageOrchestrator = new PageOrchestrator();
         pageOrchestrator.start(); // initialize the components
@@ -14,123 +16,9 @@
     }, false);
 
 
-    function PersonalMessage(_username, messagecontainer) {
-        this.username = _username;
-        this.show = function() {
-            messagecontainer.textContent = this.username;
-        }
-    }
-
-
-
-    function MeetingsList(_alert, _listcontainer, _listcontainerbody) {
-        this.alert = _alert;
-        this.listcontainer = _listcontainer;
-        this.listcontainerbody = _listcontainerbody;
-
-        this.reset = function() {
-            this.listcontainer.style.visibility = "hidden";
-        }
-
-        this.show = function(next) {
-            var self = this;
-
-            if(otherMeetings !== null){
-                self.update(JSON.parse(otherMeetingList));
-                return;
-            }
-
-            makeCall("GET", "GetMeetings", null,
-                function(req) {
-                    if (req.readyState == 4) {
-                        var message = req.responseText;
-                        if (req.status == 200) {
-                            self.splitResponse(req.responseText);
-                            self.update(JSON.parse(myMeetings));
-                            //self.update(JSON.parse(req.responseText)); // self visible by
-                            // closure
-                            if (next) next(); // show the first element of the list
-                        } else {
-                            self.alert.textContent = message;
-                        }
-                    }
-                }
-            );
-        };
-
-
-        this.splitResponse = function (res) {
-            let allMeetings = res.split('#');
-
-            myMeetings = allMeetings[0];
-            otherMeetings = allMeetings[1];
-
-            //self.update(JSON.parse(myMeetings));
-
-        }
-
-
-        this.update = function(arrayMeetings) {
-            var l = arrayMeetings.length,
-                elem, i, row, titleCell, dateCell, hourCell, linkcell, anchor;
-            if (l == 0) {
-                alert.textContent = "No meetings yet!";
-            } else {
-                this.listcontainerbody.innerHTML = ""; // empty the table body
-                // build updated list
-                var self = this;
-                arrayMeetings.forEach(function(meeting) { // self visible here, not this
-                    row = document.createElement("tr");
-
-                    titleCell = document.createElement("td");
-                    titleCell.textContent = meeting.title;
-                    row.appendChild(titleCell);
-
-                    dateCell = document.createElement("td");
-                    dateCell.textContent = meeting.date;
-                    row.appendChild(dateCell);
-
-                    hourCell = document.createElement("td");
-                    hourCell.textContent = meeting.hour;
-                    row.appendChild(hourCell);
-
-                    linkcell = document.createElement("td");
-                    anchor = document.createElement("a");
-                    linkcell.appendChild(anchor);
-                    linkText = document.createTextNode("Show");
-                    anchor.appendChild(linkText);
-                    //anchor.missionid = meeting.id; // make list item clickable
-                    anchor.setAttribute('meetingid', meeting.id); // set a custom HTML attribute
-                    anchor.addEventListener("click", (e) => {
-                        // dependency via module parameter
-                        missionDetails.show(e.target.getAttribute("meetingid")); // the list must know the details container
-                    }, false);
-                    anchor.href = "#";
-                    row.appendChild(linkcell);
-
-                    self.listcontainerbody.appendChild(row);
-                });
-                this.listcontainer.style.visibility = "visible";
-            }
-        }
-
-        this.autoclick = function(meetingId) {
-            var e = new Event("click");
-            var selector = "a[meetingid='" + meetingId + "']";
-            var allanchors = this.listcontainerbody.querySelectorAll("a");
-            var myAnchor = document.querySelector(selector);
-            var anchorToClick =
-                (meetingId) ? document.querySelector(selector) : this.listcontainerbody.querySelectorAll("a")[0];
-            anchorToClick.dispatchEvent(e);
-        }
-
-    }
-
-
-
-
-
+    // controller
     function PageOrchestrator() {
+
         var alertContainer = document.getElementById("id_alert");
 
 
@@ -156,44 +44,203 @@
                 document.getElementById("id_otherMeetingsBody"));
 
 
-
-
-            /*missionDetails = new MissionDetails({ // many parameters, wrap them in an
-                // object
+            let detailParameters = {
                 alert: alertContainer,
-                detailcontainer: document.getElementById("id_detailcontainer"),
-                expensecontainer: document.getElementById("id_expensecontainer"),
-                expenseform: document.getElementById("id_expenseform"),
-                closeform: document.getElementById("id_closeform"),
+                detailcontainer: document.getElementById("id_meetingDetail"),
+                title: document.getElementById("id_title"),
                 date: document.getElementById("id_date"),
-                destination: document.getElementById("id_destination"),
-                status: document.getElementById("id_status"),
-                description: document.getElementById("id_description"),
-                country: document.getElementById("id_country"),
-                province: document.getElementById("id_province"),
-                city: document.getElementById("id_city"),
-                fund: document.getElementById("id_fund"),
-                food: document.getElementById("id_food"),
-                accomodation: document.getElementById("id_accomodation"),
-                transportation: document.getElementById("id_transportation")
-            });
-            missionDetails.registerEvents(this);*/
+                hour: document.getElementById("id_hour"),
+                duration: document.getElementById("id_duration"),
+                partecipants: document.getElementById("id_partecipants")
+            }
 
-            //wizard = new Wizard(document.getElementById("id_createmissionform"), alertContainer);
-            //wizard.registerEvents(this);
+
+            meetingDetails = new MeetingDetails(detailParameters);
+
         };
 
 
         this.refresh = function(currentMeeting) {
             myMeetingList.reset();
             otherMeetingList.reset();
+            meetingDetails.reset();
 
-            myMeetingList.show();
-            otherMeetingList.show();
-            //missionDetails.reset();
-            //meetingList.show(function() {meetingList.autoclick(currentMeeting);}); // closure preserves visibility of this
-            //wizard.reset();
+            myMeetingList.show(function() {myMeetingList.autoclick(currentMeeting);});
         };
+    }
+
+
+
+    // constructors
+    function PersonalMessage(_username, messagecontainer) {
+        this.username = _username;
+        this.show = function() {
+            messagecontainer.textContent = this.username;
+        }
+    }
+
+    function MeetingsList(_alert, _listcontainer, _listcontainerbody) {
+        this.alert = _alert;
+        this.listcontainer = _listcontainer;
+        this.listcontainerbody = _listcontainerbody;
+
+        this.reset = function() {
+            this.listcontainer.style.visibility = "hidden";
+        }
+
+        this.show = function(next) {
+            var self = this;
+
+            makeCall("GET", "GetMeetings", null,
+                function(req) {
+                    if (req.readyState === 4) {
+                        var message = req.responseText;
+                        if (req.status === 200) {
+
+                            self.splitResponse(req.responseText);
+
+                            // show on tables
+                            self.update(myMeetings);
+                            otherMeetingList.easyShow(otherMeetings);
+
+                            if (next) next(); // show the first element of the list
+                        } else {
+                            self.alert.textContent = message;
+                        }
+                    }
+                }
+            );
+        };
+
+
+        this.easyShow = function (meetings) {
+            var self = this;
+
+            if(meetings !== null){
+                self.update(meetings);
+            }
+        }
+
+
+        this.splitResponse = function (res) {
+            let allMeetings = res.split('#');
+
+            myMeetings = JSON.parse(allMeetings[0]);
+            otherMeetings = JSON.parse(allMeetings[1]);
+        }
+
+
+        this.update = function(arrayMeetings) {
+
+            var l = arrayMeetings.length;
+            var row, titleCell, dateCell, hourCell, linkcell, anchor;
+
+            if (l === 0) {
+                alert.textContent = "No meetings yet!";
+            } else {
+                this.listcontainerbody.innerHTML = ""; // empty the table body
+
+                var self = this;
+
+                arrayMeetings.forEach(function(meeting) {
+
+                    row = document.createElement("tr");
+
+                    titleCell = document.createElement("td");
+                    titleCell.textContent = meeting.title;
+                    row.appendChild(titleCell);
+
+                    dateCell = document.createElement("td");
+                    dateCell.textContent = meeting.date;
+                    row.appendChild(dateCell);
+
+                    hourCell = document.createElement("td");
+                    hourCell.textContent = meeting.hour;
+                    row.appendChild(hourCell);
+
+                    linkcell = document.createElement("td");
+                    anchor = document.createElement("a");
+                    linkcell.appendChild(anchor);
+                    linkText = document.createTextNode("Show");
+                    anchor.appendChild(linkText);
+
+                    anchor.setAttribute('meetingId', meeting.idMeeting);
+
+                    anchor.addEventListener("click", (e) => {
+
+                        meetingDetails.show(e.target.getAttribute("meetingId")); // the list must know the details container
+                    }, false);
+
+                    anchor.href = "#";
+                    row.appendChild(linkcell);
+
+                    self.listcontainerbody.appendChild(row);
+                });
+                this.listcontainer.style.visibility = "visible";
+            }
+        }
+
+        this.autoclick = function(meetingId) {
+            var e = new Event("click");
+            var selector = "a[meetingId='" + meetingId + "']";
+            //var allanchors = this.listcontainerbody.querySelectorAll("a");
+            //var myAnchor = document.querySelector(selector);
+            var anchorToClick = (meetingId) ? document.querySelector(selector) : this.listcontainerbody.querySelectorAll("a")[0];
+            anchorToClick.dispatchEvent(e);
+        }
+
+    }
+
+    function MeetingDetails(options) {
+
+        this.alert = options['alert'];
+        this.detailcontainer = options['detailcontainer'];
+
+        this.title = options['title'];
+        this.date = options['date'];
+        this.hour = options['hour'];
+        this.duration = options['duration'];
+        this.partecipants = options['partecipants'];
+
+
+
+        this.show = function(missionid) {
+            var self = this;
+
+            /*if(typeof missionid === 'undefined')
+                missionid = myMeetings[0].idMeeting;*/
+
+            makeCall("GET", "GetMeetingDetails?meetingId=" + missionid, null,
+                function(req) {
+                    if (req.readyState === 4) {
+                        var message = req.responseText;
+                        if (req.status === 200) {
+                            var meeting = JSON.parse(req.responseText);
+                            self.update(meeting); // self is the object on which the function
+                            // is applied
+                            self.detailcontainer.style.visibility = "visible";
+
+                        } else {
+                            self.alert.textContent = message;
+
+                        }
+                    }
+                }
+            );
+        };
+
+
+        this.reset = function() {
+            this.detailcontainer.style.visibility = "hidden";
+        }
+
+        this.update = function(m) {
+            this.title.textContent = m.title;
+            this.date.textContent = m.date;
+            this.hour.textContent = m.hour;
+            this.duration.textContent = m.duration;
+            this.partecipants.textContent = m.maxParticipantsNumber;
+        }
     }
 
 })();

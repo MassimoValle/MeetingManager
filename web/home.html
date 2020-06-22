@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Home Page</title>
     <script src="js/utils.js" charset="utf-8" defer></script>
-    <script src="js/utils.js" charset="utf-8" defer></script>
     <script src="js/meetingsManagement.js" charset="utf-8" defer></script>
 
     <link rel="stylesheet" type="text/css" media="all" href="style.css"/>
@@ -18,44 +17,49 @@
 <p>Nice to see you again <span id="id_username"></span></p>
 <div id="id_alert" class="alertmessage"></div>
 
+<div>
+    <div align="left">
+        <h2>My Meetings:</h2>
+        <table id="id_myMeetings" class="boxed">
+            <thead>
+                <tr>
+                    <th class="sortable">Meeting</th>
+                    <th class="sortable">Date</th>
+                    <th class="sortable">Starting hour</th>
+                    <th>Link</th>
+                </tr>
+            </thead>
+            <tbody id="id_myMeetingsBody"></tbody>
+        </table>
+    </div>
 
-<h2>My Meetings:</h2>
-<table id="id_myMeetings" class="boxed">
-    <thead>
-        <tr>
-            <th class="sortable">Meeting</th>
-            <th class="sortable">Date</th>
-            <th class="sortable">Starting hour</th>
-            <th>Link</th>
-        </tr>
-    </thead>
-    <tbody id="id_myMeetingsBody"></tbody>
-</table>
 
 
-
-<!-- DETAILS
-<table id="id_meetingDetail" class="boxed">
-    <thead>
-    <tr>
-        <th>Title</th>
-        <th>Date</th>
-        <th>Hour</th>
-        <th>Duration</th>
-        <th>Patecipants</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td id="id_title"></td>
-        <td id="id_date"></td>
-        <td id="id_hour"></td>
-        <td id="id_duration"></td>
-        <td id="id_partecipants"></td>
-    </tr>
-    </tbody>
-</table>-->
-
+<!-- DETAILS-->
+    <div align="right">
+        <h3>Meeting's details:</h3>
+        <table id="id_meetingDetail" class="boxed">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Date</th>
+                <th>Starting Hour</th>
+                <th>Duration</th>
+                <th>Patecipants</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td id="id_title"></td>
+                <td id="id_date"></td>
+                <td id="id_hour"></td>
+                <td id="id_duration"></td>
+                <td id="id_partecipants"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <h2>Others Meetings:</h2>
 <table id="id_otherMeetings" class="boxed">
