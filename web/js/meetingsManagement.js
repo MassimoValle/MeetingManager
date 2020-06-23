@@ -1,7 +1,7 @@
 (function () {
 
     // page components
-    var meetingDetails
+    var meetingDetails;
     var pageOrchestrator;
     var myMeetings;
     var otherMeetings;
@@ -32,16 +32,19 @@
             personalMessage.show();
 
 
-            myMeetingList = new MeetingsList(
+            myMeetingList = new MeetingsTable(
                 alertContainer,
                 document.getElementById("id_myMeetings"),
                 document.getElementById("id_myMeetingsBody"));
 
 
-            otherMeetingList = new MeetingsList(
+            otherMeetingList = new MeetingsTable(
                 alertContainer,
                 document.getElementById("id_otherMeetings"),
                 document.getElementById("id_otherMeetingsBody"));
+
+
+            meetingList = new getAllMeetings(alertContainer);
 
 
             let detailParameters = {
@@ -65,13 +68,45 @@
             otherMeetingList.reset();
             meetingDetails.reset();
 
-            myMeetingList.show(function() {myMeetingList.autoclick(currentMeeting);});
+            meetingList.getMeetings();
+
+            myMeetingList.show(myMeetings,function() {myMeetingList.autoclick(currentMeeting);});
+            otherMeetings.show(otherMeetings);
         };
     }
 
 
 
     // constructors
+
+    function getAllMeetings(_alert) {
+        this.alert = _alert;
+
+        this.getMeetings = function() {
+            makeCall("GET", "GetMeetings", null,
+                function (req) {
+                    if (req.readyState === 4) {
+                        var message = req.responseText;
+                        if (req.status === 200) {
+
+                            self.splitResponse(req.responseText);
+
+                        } else {
+                            self.alert.textContent = message;
+                        }
+                    }
+                }
+            );
+        }
+
+        this.splitResponse = function (res) {
+            let allMeetings = res.split('#');
+
+            myMeetings = JSON.parse(allMeetings[0]);
+            otherMeetings = JSON.parse(allMeetings[1]);
+        }
+    }
+
     function PersonalMessage(_username, messagecontainer) {
         this.username = _username;
         this.show = function() {
@@ -79,7 +114,7 @@
         }
     }
 
-    function MeetingsList(_alert, _listcontainer, _listcontainerbody) {
+    function MeetingsTable(_alert, _listcontainer, _listcontainerbody) {
         this.alert = _alert;
         this.listcontainer = _listcontainer;
         this.listcontainerbody = _listcontainerbody;
@@ -88,47 +123,15 @@
             this.listcontainer.style.visibility = "hidden";
         }
 
-        this.show = function(next) {
+        this.show = function(meetings, autoclick) {
+
             var self = this;
 
-            makeCall("GET", "GetMeetings", null,
-                function(req) {
-                    if (req.readyState === 4) {
-                        var message = req.responseText;
-                        if (req.status === 200) {
+            self.update(meetings);
 
-                            self.splitResponse(req.responseText);
+            if (autoclick) autoclick(); // show the first element of the list
 
-                            // show on tables
-                            self.update(myMeetings);
-                            otherMeetingList.easyShow(otherMeetings);
-
-                            if (next) next(); // show the first element of the list
-                        } else {
-                            self.alert.textContent = message;
-                        }
-                    }
-                }
-            );
         };
-
-
-        this.easyShow = function (meetings) {
-            var self = this;
-
-            if(meetings !== null){
-                self.update(meetings);
-            }
-        }
-
-
-        this.splitResponse = function (res) {
-            let allMeetings = res.split('#');
-
-            myMeetings = JSON.parse(allMeetings[0]);
-            otherMeetings = JSON.parse(allMeetings[1]);
-        }
-
 
         this.update = function(arrayMeetings) {
 
@@ -167,7 +170,7 @@
                     anchor.setAttribute('meetingId', meeting.idMeeting);
 
                     anchor.addEventListener("click", (e) => {
-
+                        //linkcell.setAttribute("class", "detailSelected");
                         meetingDetails.show(e.target.getAttribute("meetingId")); // the list must know the details container
                     }, false);
 

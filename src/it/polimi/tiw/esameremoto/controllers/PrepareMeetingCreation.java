@@ -9,6 +9,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,7 @@ import java.util.Date;
 
 
 @WebServlet("/PrepareMeetingCreation")
+@MultipartConfig
 public class PrepareMeetingCreation extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
