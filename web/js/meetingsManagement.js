@@ -1,8 +1,13 @@
 (function () {
 
     // page components
-    var meetingDetails;
     var pageOrchestrator;
+
+    var meetingDetails;
+    var myMeetingTable;
+    var otherMeetingTable;
+
+
     var myMeetings;
     var otherMeetings;
 
@@ -32,13 +37,13 @@
             personalMessage.show();
 
 
-            myMeetingList = new MeetingsTable(
+            myMeetingTable = new MeetingsTable(
                 alertContainer,
                 document.getElementById("id_myMeetings"),
                 document.getElementById("id_myMeetingsBody"));
 
 
-            otherMeetingList = new MeetingsTable(
+            otherMeetingTable = new MeetingsTable(
                 alertContainer,
                 document.getElementById("id_otherMeetings"),
                 document.getElementById("id_otherMeetingsBody"));
@@ -64,14 +69,11 @@
 
 
         this.refresh = function(currentMeeting) {
-            myMeetingList.reset();
-            otherMeetingList.reset();
+            myMeetingTable.reset();
+            otherMeetingTable.reset();
             meetingDetails.reset();
 
             meetingList.getMeetings();
-
-            myMeetingList.show(myMeetings,function() {myMeetingList.autoclick(currentMeeting);});
-            otherMeetings.show(otherMeetings);
         };
     }
 
@@ -82,14 +84,17 @@
     function getAllMeetings(_alert) {
         this.alert = _alert;
 
-        this.getMeetings = function() {
+        this.getMeetings = function(currentMeeting) {
+
+            var self = this;
+
             makeCall("GET", "GetMeetings", null,
                 function (req) {
                     if (req.readyState === 4) {
                         var message = req.responseText;
                         if (req.status === 200) {
 
-                            self.splitResponse(req.responseText);
+                            self.splitResponse(req.responseText, currentMeeting);
 
                         } else {
                             self.alert.textContent = message;
@@ -99,11 +104,20 @@
             );
         }
 
-        this.splitResponse = function (res) {
+        this.splitResponse = function (res, currentMeeting) {
             let allMeetings = res.split('#');
 
             myMeetings = JSON.parse(allMeetings[0]);
             otherMeetings = JSON.parse(allMeetings[1]);
+
+            this.show(currentMeeting);
+        }
+
+        this.show = function (currentMeeting) {
+
+            myMeetingTable.show(myMeetings,function() {myMeetingTable.autoclick(currentMeeting);});
+            otherMeetingTable.show(otherMeetings);
+
         }
     }
 
