@@ -20,18 +20,11 @@ public class LoginChecker implements Filter {
     
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) resp;
-        String loginPath = "/index.html";
+        String loginPath = "index.html";
     
         HttpSession session = request.getSession();
         if (session.isNew() || session.getAttribute("user")==null) {
-            WebContext webContext = new WebContext(request, response, request.getServletContext(), request.getLocale());
-            webContext.setVariable("errorMessage", "I am sorry, you have to login to access.");
-            ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(request.getServletContext());
-            templateResolver.setTemplateMode(TemplateMode.HTML);
-            TemplateEngine templateEngine = new TemplateEngine();
-            templateEngine.setTemplateResolver(templateResolver);
-            templateResolver.setSuffix(".html");
-            templateEngine.process(loginPath, webContext, response.getWriter());
+            response.sendRedirect(loginPath);
             return;
         }
         
@@ -42,4 +35,5 @@ public class LoginChecker implements Filter {
         
     }
     
+    //TODO controllare se i filtri ci sono tutti
 }

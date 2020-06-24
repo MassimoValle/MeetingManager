@@ -4,113 +4,116 @@
     <meta charset="UTF-8">
     <title>Home Page</title>
     <script src="js/utils.js" charset="utf-8" defer></script>
-    <script src="js/utils.js" charset="utf-8" defer></script>
     <script src="js/meetingsManagement.js" charset="utf-8" defer></script>
 
     <link rel="stylesheet" type="text/css" media="all" href="style.css"/>
 </head>
 <body>
 
-<div align="right">
-    <a href="Logout">Logout</a>
-</div>
-<h1>Welcome to the Meeting Mamagement Home Page</h1>
-<p>Nice to see you again <span id="id_username"></span></p>
-<div id="id_alert" class="alertmessage"></div>
+    <div align="right">
+        <a href="Logout">Logout</a>
+    </div>
+    <h1>Welcome to the Meeting Mamagement Home Page</h1>
+    <p>Nice to see you again <span id="id_username"></span></p>
+    <div id="id_alert" class="alertmessage">PROVA</div>
+
+    <div>
+        <div align="left">
+            <h2>My Meetings:</h2>
+            <table id="id_myMeetings" class="boxed">
+                <thead>
+                    <tr>
+                        <th class="sortable">Meeting</th>
+                        <th class="sortable">Date</th>
+                        <th class="sortable">Starting hour</th>
+                        <th>Link</th>
+                    </tr>
+                </thead>
+                <tbody id="id_myMeetingsBody"></tbody>
+            </table>
+        </div>
 
 
-<h2>My Meetings:</h2>
-<table id="id_myMeetings" class="boxed">
-    <thead>
+
+    <!-- DETAILS-->
+        <div align="right">
+            <h3>Meeting's details:</h3>
+            <table id="id_meetingDetail" class="boxed">
+                <thead>
+                    <tr>
+                    <th>Title</th>
+                    <th>Date</th>
+                    <th>Starting Hour</th>
+                    <th>Duration</th>
+                    <th>Patecipants</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="id_title"></td>
+                        <td id="id_date"></td>
+                        <td id="id_hour"></td>
+                        <td id="id_duration"></td>
+                        <td id="id_partecipants"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <h2>Others Meetings:</h2>
+    <table id="id_otherMeetings" class="boxed">
+        <thead>
         <tr>
             <th class="sortable">Meeting</th>
             <th class="sortable">Date</th>
             <th class="sortable">Starting hour</th>
             <th>Link</th>
         </tr>
-    </thead>
-    <tbody id="id_myMeetingsBody"></tbody>
-</table>
+        </thead>
+        <tbody id="id_otherMeetingsBody"></tbody>
+    </table>
 
 
+    <fieldset>
+        <div id="id_createMeetingForm">
+            <p>Complete the form to create a meeting</p>
+            <form action="#">
+                <p>Title: <input type="text" name="title" required/></p>
+                <p>Date: <input type="date" name="date" required><br></p>
+                <p>Hour: <input type="time" name="hour" required/></p>
+                <p>Duration in minutes: <input type="number" name="duration" required/></p>
+                <p>Maximum number of participants <input type="number" name="maxParticipantsNumber" required/></p>
+                <input type="button" value="INVIA" name="submit" class="submit">
+                <br>
+                <p class="errorMessage"></p>
+            </form>
+        </div>
 
-<!-- DETAILS -->
-<table id="id_meetingDetail" class="boxed">
-    <thead>
-    <tr>
-        <th>Title</th>
-        <th>Date</th>
-        <th>Hour</th>
-        <th>Duration</th>
-        <th>Patecipants</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td id="id_title"></td>
-        <td id="id_date"></td>
-        <td id="id_hour"></td>
-        <td id="id_duration"></td>
-        <td id="id_partecipants"></td>
-    </tr>
-    </tbody>
-</table>
+        <div id="id_chooseParticipants">
+            <p>Choose the meeting participant</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>USERS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                <br>
+                <h5 class="errorMessage"></h5>
+            </table>
+        </div>
 
+        <div id="id_threeAttemptsDone">
+            <h4 class="errorMessage">
+                Tre tentativi di definire una riunione con troppi partecipanti, la riunione non sarà creata.</h4>
+            <br>
+            <h5><a id="id_back" href="#">BACK</a></h5>
+        </div>
+    </fieldset>
 
-<h2>Others Meetings:</h2>
-<table id="id_otherMeetings" class="boxed">
-    <thead>
-    <tr>
-        <th class="sortable">Meeting</th>
-        <th class="sortable">Date</th>
-        <th class="sortable">Starting hour</th>
-        <th>Link</th>
-    </tr>
-    </thead>
-    <tbody id="id_otherMeetingsBody"></tbody>
-</table>
-
-
-
-
-<div class="right">
-    <p>Complete the form to create a meeting</p>
-    <form id="id_createMissionForm" action="#">
-        <fieldset>
-            <p>
-                Title: <input type="text" name="title" required />
-            </p>
-            <p>
-                Date: <input type="date" name="date" required><br>
-            </p>
-            <p>
-                Hour: <input type="time" name="hour" required />
-            </p>
-            <p>
-                Duration in minutes: <input type="number" name="duration" required  />
-            </p>
-            <p>
-                Maximum number of participants <input type="number" name="maxParticipantsNumber" required />
-            </p>
-            <input type="button" value="INVIA" name="submit" class="submit">
-            <p class="errorMessage"></p>
-        </fieldset>
-    </form>
-    <br>
-</div>
-
-<p>Choose the participants</p>
-<table id="chooseParticipantsTable">
-    <thead>
-    <tr>
-        <th>USERS</th>
-    </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
-<br>
-<h5 class="errorMessage"></h5>
+    </fieldset>
 
 </body>
 </html>

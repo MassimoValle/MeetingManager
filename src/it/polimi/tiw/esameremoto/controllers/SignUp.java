@@ -62,8 +62,6 @@ public class SignUp extends HttpServlet {
             UserDAO userDAO = new UserDAO(connection);
             
             if (!userDAO.checkUsername(username)) {
-                //TODO potrei modificarlo portando direttamente la lista di usernames lato client
-                // prima ancora di registrarsi
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().println("The name already exists, choose another one.");
                 return;
@@ -78,7 +76,7 @@ public class SignUp extends HttpServlet {
             userDAO.insertUser(user);
             
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().println(username);
+            response.getWriter().write(username);
             request.getSession().setAttribute("user", user);
             
         } catch (SQLException e) {

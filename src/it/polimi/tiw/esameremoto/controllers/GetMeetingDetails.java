@@ -1,40 +1,33 @@
 package it.polimi.tiw.esameremoto.controllers;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
+import com.google.gson.Gson;
+import it.polimi.tiw.esameremoto.beans.Meeting;
+import it.polimi.tiw.esameremoto.dao.MeetingDAO;
+import it.polimi.tiw.esameremoto.utils.ConnectionHandler;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import it.polimi.tiw.esameremoto.beans.Meeting;
-import it.polimi.tiw.esameremoto.beans.User;
-import it.polimi.tiw.esameremoto.dao.MeetingDAO;
-import it.polimi.tiw.esameremoto.utils.ConnectionHandler;
-import it.polimi.tiw.esameremoto.utils.ServletUtils;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 
 @WebServlet("/GetMeetingDetails")
+@MultipartConfig
 public class GetMeetingDetails extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	private TemplateEngine templateEngine;
 
 	public GetMeetingDetails() {
 		super();
 	}
 
 	public void init() throws ServletException {
-		this.templateEngine = ServletUtils.createThymeleafTemplate(getServletContext());
 		connection = ConnectionHandler.getConnection(getServletContext());
 	}
 
@@ -48,7 +41,8 @@ public class GetMeetingDetails extends HttpServlet {
 			meetingID = Integer.parseInt(request.getParameter("meetingId"));
 		} catch (NumberFormatException | NullPointerException e) {
 			// only for debugging e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect param values");
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println("Incorrect param values");
 			return;
 		}
 
@@ -58,20 +52,20 @@ public class GetMeetingDetails extends HttpServlet {
 		try {
 			meeting = meetingDAO.findMeetingById(meetingID);
 			if (meeting == null) {
-				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Resource not found");
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				response.getWriter().println("Resource not found");
 				return;
 			}
 		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover meeting");
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println("Not possible to recover meeting");
 			return;
 		}
 
-		// Redirect to the Home page and add missions to the parameters
-		String path = "/meetingDetails.html";
-		ServletContext servletContext = getServletContext();
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("meeting", meeting);
-		templateEngine.process(path, ctx, response.getWriter());
+		String json = new Gson().toJson(meeting);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().write(json);
 	}
 
 	public void destroy() {

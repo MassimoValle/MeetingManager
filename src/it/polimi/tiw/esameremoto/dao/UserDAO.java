@@ -34,28 +34,6 @@ public class UserDAO {
 			}
 		}
 	}
-
-	public ArrayList<User> getUsers() throws SQLException {
-		String query = "SELECT * FROM db_meeting_manager_esame2020.user";
-		ArrayList<User> users = new ArrayList<>();
-		
-		// try-catch with resources
-		try (Statement statement = connection.createStatement()) {
-			try (ResultSet resultSet = statement.executeQuery(query)) {
-				while (resultSet.next()){
-					User user = new User();
-					user.setUsername(resultSet.getString("username"));
-					user.setPassword(resultSet.getString("password"));
-					user.setName(resultSet.getString("name"));
-					user.setSurname(resultSet.getString("surname"));
-					user.setEmail(resultSet.getString("email"));
-					users.add(user);
-				}
-			}
-		}
-		
-		return users;
-	}
 	
 	public ArrayList<String> getUsernames() throws SQLException {
 		String query = "SELECT username FROM db_meeting_manager_esame2020.user";

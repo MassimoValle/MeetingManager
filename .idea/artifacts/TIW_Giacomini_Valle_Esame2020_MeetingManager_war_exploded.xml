@@ -15,6 +15,7 @@
           <element id="file-copy" path="$PROJECT_DIR$/../../../Program Files/Java/thymeleaf-3.0.9.RELEASE/lib/attoparser-2.0.4.RELEASE.jar" />
           <element id="library" level="project" name="Maven: org.thymeleaf:thymeleaf:Release" />
           <element id="file-copy" path="$PROJECT_DIR$/web/WEB-INF/lib/mysql-connector-java-8.0.20.jar" />
+          <element id="library" level="project" name="com.google.code.gson:gson:2.8.6" />
         </element>
       </element>
     </root>
