@@ -13,19 +13,19 @@
 
 
     // Arrays
-    var myMeetings;
-    var otherMeetings;
+    var myMeetings;     // array che contiene i meetings che ho creato
+    var otherMeetings;  // array che contiene i meetings a cui partecipo
 
     // helper
-    var attempts = 0;
-    var selectedCell;
+    var attempts = 0;   // nr di tentativo di invito dei partecipanti
+    var selectedCell;   // è la cella gialla che corrisponde al meetingDetails
 
 
     // load event
     window.addEventListener("load", () => {
         pageOrchestrator = new PageOrchestrator();
-        pageOrchestrator.start(); // initialize the components
-        pageOrchestrator.refresh(); // display initial content
+        pageOrchestrator.start(); // inizializza i componenti
+        pageOrchestrator.refresh(); // mostra i componenti
     }, false);
 
 
@@ -95,17 +95,21 @@
     function GetAllMeetings(_alert) {
         this.alert = _alert;
 
+        // richiede al server tutti i meeting, sia quelli che ho creato che quelli a cui partecipo
         this.getMeetings = function(currentMeeting) {
 
             var self = this;
 
             makeCall("GET", "GetMeetings", null,
                 function (req) {
-                    if (req.readyState === 4) {
-                        var message = req.responseText;
+                    if (req.readyState === XMLHttpRequest.DONE) {
+
+                        let message = req.responseText;
+
                         if (req.status === 200) {
 
-                            self.splitResponse(req.responseText, currentMeeting);
+                            // message contiene: json_myMeetings + "#" + json_othersMeetings
+                            self.splitResponse(message, currentMeeting);
 
                         } else {
                             self.alert.textContent = message;
@@ -118,6 +122,7 @@
         this.splitResponse = function (res, currentMeeting) {
             let allMeetings = res.split('#');
 
+            // se json_myMeetings e json_othersMeetings sono vuote..
             if(allMeetings[0] === "[]" && allMeetings[1] === "[]")
                 meetingDetails.reset();   //nasconde la meeting details
 
@@ -127,10 +132,16 @@
             this.show(currentMeeting);
         }
 
+        // chiama la show di myMeetingTable e di otherMeetingTable
         this.show = function (currentMeeting) {
+
+            // questi if else servono solo per fare l'autoclick nella tabella otherMeetingTable
+            // nel caso in cui la tabella myMeetingTable sia vuota
+            // (PS: anche se chiamo la show con l'autoclick, se è vuota non lo esegue)
 
             myMeetingTable.show(myMeetings,function() {myMeetingTable.autoclick(currentMeeting);});
 
+            // se non ho meeting fatti da me...
             if(myMeetings.length === 0)
                 otherMeetingTable.show(otherMeetings,function() {otherMeetingTable.autoclick(currentMeeting);});
 
@@ -141,6 +152,7 @@
     function PersonalMessage(_username, messagecontainer) {
         this.username = _username;
         this.show = function() {
+            // stampa all'inizio della home il nome dell'utente
             messagecontainer.textContent = this.username;
         }
     }
@@ -154,27 +166,32 @@
             this.listcontainer.style.visibility = "hidden";
         }
 
+        // chiama la update() se meeting non è vuota, altrimenti stampa l'alert
         this.show = function (meetings, autoclick) {
 
             var self = this;
 
+            // se meeting non è vuota...
             if (meetings.length !== 0){
+
                 self.update(meetings);
-                if (autoclick) autoclick(); // show the first element of the list
+                if (autoclick) autoclick(); // mostra il primo meeting della tabella
+
             }
             else this.alert.textContent = "No meetings yet!";
         };
 
+        // compila la tabella con i meetings che il server gli fornisce
         this.update = function (arrayMeetings) {
 
             var l = arrayMeetings.length;
-            var row, titleCell, dateCell, hourCell, linkcell, anchor;
+            let row, titleCell, dateCell, hourCell, linkcell, anchor;
 
-            if (l === 0) {
+            if (l === 0) {  // controllo inutile ma per sicurezza XD
                 alert.textContent = "No meetings yet!";
-            } else {
-                this.listcontainerbody.innerHTML = ""; // empty the table body
 
+            } else {
+                this.listcontainerbody.innerHTML = ""; // svuota il body della tabella
                 this.alert.textContent = "";
 
                 var self = this;
@@ -183,37 +200,45 @@
 
                     row = document.createElement("tr");
 
+                    // prima cella della riga (titolo)
                     titleCell = document.createElement("td");
                     titleCell.textContent = meeting.title;
                     row.appendChild(titleCell);
 
+                    // seconda cella della riga (data)
                     dateCell = document.createElement("td");
                     dateCell.textContent = meeting.date;
                     row.appendChild(dateCell);
 
+                    // terza cella della riga (ora)
                     hourCell = document.createElement("td");
                     hourCell.textContent = meeting.hour;
                     row.appendChild(hourCell);
 
+                    // quarta cella della riga (ancora x dettagli)
                     linkcell = document.createElement("td");
-                    anchor = document.createElement("a");
-                    linkcell.appendChild(anchor);
-                    linkText = document.createTextNode("Show");
-                    anchor.appendChild(linkText);
 
+                    anchor = document.createElement("a");
+                    let linkText = document.createTextNode("Show");
+                    anchor.appendChild(linkText);
                     anchor.setAttribute('meetingId', meeting.idMeeting);
 
                     anchor.addEventListener("click", (e) => {
-						e.preventDefault();
+
+                        e.preventDefault();
 					
-                        if(selectedCell !== undefined) selectedCell.className = "";
+                        if(selectedCell !== undefined) selectedCell.className = ""; // entra solo la prima volta
 
                         selectedCell = e.target.closest("td");
-                        selectedCell.className = "detailSelected";
+                        selectedCell.className = "detailSelected";  // colora di giallo la cella
+
                         meetingDetails.show(e.target.getAttribute("meetingId")); // the list must know the details container
                     }, false);
 
                     anchor.href = "#";
+
+                    linkcell.appendChild(anchor);
+
                     row.appendChild(linkcell);
 
                     self.listcontainerbody.appendChild(row);
@@ -223,15 +248,22 @@
         }
 
         this.autoclick = function (meetingId) {
-            var e = new Event("click");
+
+            var e = new Event("click"); // crea l'evento
             var selector = "a[meetingId='" + meetingId + "']";
-            var anchorToClick = (meetingId) ? document.querySelector(selector) : this.listcontainerbody.querySelectorAll("a")[0];
-            anchorToClick.dispatchEvent(e);
+
+            var anchorToClick = (meetingId) // se meetingId != undefined..
+                ? document.querySelector(selector)  // ..allora prendi l'ancora relariva al meetingId
+                : this.listcontainerbody.querySelectorAll("a")[0];  // ..altrimenti prendi la prima ancora della tabella
+
+            anchorToClick.dispatchEvent(e); // avvia l'evento
         }
 
     }
 
     function MeetingDetails(options) {
+
+        // option è un array che contiene gli id ( detailParameters nella PageOrchestrator.start() )
 
         this.detailcontainer = options['detailcontainer'];
 
@@ -243,24 +275,24 @@
 
         this.detailDiv = document.getElementById("id_meetingDetailDiv");
 
-
+        // richiede al server i dettagli del meeting selezionato
         this.show = function (missionid) {
-            var self = this;
 
-            /*if(typeof missionid === 'undefined')
-                missionid = myMeetings[0].idMeeting;*/
+            var self = this;
 
             makeCall("GET", "GetMeetingDetails?meetingId=" + missionid, null,
                 function (req) {
-                    if (req.readyState === 4) {
-                        var message = req.responseText;
+                    if (req.readyState === XMLHttpRequest.DONE) {
+                        let message = req.responseText;
+
                         if (req.status === 200) {
-                            var meeting = JSON.parse(req.responseText);
-                            self.update(meeting); // self is the object on which the function
-                            // is applied
+
+                            let meeting = JSON.parse(message);
+                            self.update(meeting);
                             self.detailDiv.style.visibility = "visible";
 
                         } else {
+
                             self.reset();
 
                         }
@@ -271,15 +303,20 @@
 
 
         this.reset = function () {
+
             this.detailDiv.style.visibility = "hidden";
+
         }
 
+        // compila la tabella con i dettagli del meeting che il server gli fornisce
         this.update = function (m) {
-            this.title.textContent = m.title; this.title.className = "detailSelected";
+                                                // colora di giallo il titolo della riunione
+            this.title.textContent = m.title;   this.title.className = "detailSelected";
             this.date.textContent = m.date;
             this.hour.textContent = m.hour;
             this.duration.textContent = m.duration;
             this.participants.textContent = m.maxParticipantsNumber;
+
         }
     }
 
