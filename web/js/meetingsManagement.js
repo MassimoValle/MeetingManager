@@ -7,14 +7,17 @@
     var myMeetingTable;
     var otherMeetingTable;
 
-
-    var myMeetings;
-    var otherMeetings;
     var createMeetingForm;
     var chooseMeetingParticipants;
     var newMeetingParameters;
-    var attempts = 0;
 
+
+    // Arrays
+    var myMeetings;
+    var otherMeetings;
+
+    // helper
+    var attempts = 0;
     var selectedCell;
 
 
@@ -274,7 +277,7 @@
         }
 
         this.update = function (m) {
-            this.title.textContent = m.title;
+            this.title.textContent = m.title; this.title.className = "detailSelected";
             this.date.textContent = m.date;
             this.hour.textContent = m.hour;
             this.duration.textContent = m.duration;
@@ -398,6 +401,7 @@
                             let message = request.responseText;
                             switch (request.status) {
                                 case 200:
+                                    createMeetingForm.reset();
                                     pageOrchestrator.refresh();
                                     break;
                                 default:
