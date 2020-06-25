@@ -398,13 +398,18 @@
 
     // Oggetto che rappresenta la scelta dei partecipanti
     function ChooseMeetingParticipants(_usernamesParticipants) {
+
         this.tableDiv = document.getElementById("id_chooseParticipants");
         this.usernamesParticipants = _usernamesParticipants;
+
         let self = this;
 
         //HANDLERS
         // selezionando un utente viene modificata la sua classe in "userChose"
+
+        // fa switchare l'utente da selezionato a non
         this.selectHandler = function (event) {
+
             event.preventDefault();
             let td = event.target.closest("td");
 
@@ -420,8 +425,8 @@
             document.getElementById("id_chooseParticipants").hidden = true;
             let form = document.getElementById("id_createMeetingForm");
 
-            form.hidden = false;
-            form.querySelector('p.errorMessage').textContent = "";
+            form.hidden = false;    // faccio ricomparire la form
+            form.querySelector('p.errorMessage').textContent = "";  // resetto il messaggio di errore
         }
         // vengono invitati gli utenti precedentemente selezionati
         this.invitaButtonHandler = function (event) {
@@ -606,6 +611,7 @@
 
     // oggetto per collezionare i parametri del meeting da creare che verranno passati al server
     function NewMeetingParameters(_form, _usernameCreator) {
+
         this.title = _form.querySelector('input[name="title"]').value;
         this.date = _form.querySelector('input[name="date"]').value;
         this.hour = _form.querySelector('input[name="hour"]').value;
