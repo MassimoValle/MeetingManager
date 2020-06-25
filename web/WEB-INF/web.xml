@@ -30,12 +30,13 @@
         <filter-name>LoginChecker</filter-name>
         <url-pattern>/GetMeetings</url-pattern>
         <url-pattern>/home.html</url-pattern>
-        <url-pattern>/PrepareMeetingCreation</url-pattern>
+        <url-pattern>/GetUsers</url-pattern>
         <url-pattern>/anagrafica.html</url-pattern>
         <url-pattern>/CreateMeeting</url-pattern>
         <url-pattern>/cancellazione.html</url-pattern>
         <url-pattern>/GetMeetingDetails</url-pattern>
         <url-pattern>/meetingDetails.html</url-pattern>
+        <url-pattern>/AddUser</url-pattern>
     </filter-mapping>
 
 </web-app>

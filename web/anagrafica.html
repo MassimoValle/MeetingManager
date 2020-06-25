@@ -19,7 +19,7 @@
                 th:if="${!userToChoose.username.equals(session.user.username)}"
                 th:class="${session.usersChosenUsernames!=null && session.usersChosenUsernames.contains(userToChoose.username)} ? 'userChosen'">
 
-                <td><a th:href="@{/PrepareMeetingCreation(username=${userToChoose.username})}" th:text="${userToChoose.username}">Nome di prova</a></td>
+                <td><a th:href="@{/AddUser(username=${userToChoose.username})}" th:text="${userToChoose.username}">Nome di prova</a></td>
             </tr>
             <tr>
                 <td>
