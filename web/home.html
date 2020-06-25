@@ -15,11 +15,12 @@
 </div>
 <h1>Welcome to the Meeting Mamagement Home Page</h1>
 <p>Nice to see you again <span id="id_username"></span></p>
-<div id="id_alert" class="alertmessage"></div>
+<div id="id_mainAlert"></div>
 
 <div>
     <div class="left">
         <h2>My Meetings:</h2>
+        <p id="id_alert_myMeetings"></p>
         <table id="id_myMeetings" style="float: left">
             <thead>
                 <tr>
@@ -37,7 +38,7 @@
 
 <!-- DETAILS-->
 
-    <div class="right">
+    <div class="right" id="id_meetingDetailDiv">
         <h3>Meeting details:</h3>
         <table id="id_meetingDetail" style="float: left">
             <thead>
@@ -55,7 +56,7 @@
                 <td id="id_date"></td>
                 <td id="id_hour"></td>
                 <td id="id_duration"></td>
-                <td id="id_partecipants"></td>
+                <td id="id_participants"></td>
             </tr>
             </tbody>
         </table>
@@ -67,6 +68,8 @@
 
 <div class="right">
     <h2>Others Meetings:</h2>
+    <p id="id_alert_otherMeetings"></p>
+
     <table id="id_otherMeetings">
         <thead>
         <tr>

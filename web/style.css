@@ -1,6 +1,5 @@
 
 .userChosen {
-    fill: coral;
     background-color: aquamarine;
 }
 
@@ -10,7 +9,7 @@
 }
 
 .detailSelected {
-    background-color: gray;
+    background-color: yellow;
 }
 
 table {
