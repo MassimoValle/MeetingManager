@@ -1,8 +1,13 @@
 (function () {
 
     // page components
-    var meetingDetails
     var pageOrchestrator;
+
+    var meetingDetails;
+    var myMeetingTable;
+    var otherMeetingTable;
+
+
     var myMeetings;
     var otherMeetings;
     var createMeetingForm;
@@ -35,16 +40,19 @@
             personalMessage.show();
 
 
-            myMeetingList = new MeetingsList(
+            myMeetingTable = new MeetingsTable(
                 alertContainer,
                 document.getElementById("id_myMeetings"),
                 document.getElementById("id_myMeetingsBody"));
 
 
-            otherMeetingList = new MeetingsList(
+            otherMeetingTable = new MeetingsTable(
                 alertContainer,
                 document.getElementById("id_otherMeetings"),
                 document.getElementById("id_otherMeetingsBody"));
+
+
+            meetingList = new getAllMeetings(alertContainer);
 
 
             let detailParameters = {
@@ -66,38 +74,24 @@
         };
 
 
-        this.refresh = function (currentMeeting) {
-            myMeetingList.reset();
-            otherMeetingList.reset();
+        this.refresh = function(currentMeeting) {
+            myMeetingTable.reset();
+            otherMeetingTable.reset();
             meetingDetails.reset();
 
-            myMeetingList.show(function () {
-                myMeetingList.autoclick(currentMeeting);
-            });
-
+            meetingList.getMeetings();
             createMeetingForm.reset();
         };
     }
 
 
     // constructors
-    function PersonalMessage(_username, messagecontainer) {
-        this.username = _username;
-        this.show = function () {
-            messagecontainer.textContent = this.username;
-        }
-    }
 
-    function MeetingsList(_alert, _listcontainer, _listcontainerbody) {
+    function getAllMeetings(_alert) {
         this.alert = _alert;
-        this.listcontainer = _listcontainer;
-        this.listcontainerbody = _listcontainerbody;
 
-        this.reset = function () {
-            this.listcontainer.style.visibility = "hidden";
-        }
+        this.getMeetings = function(currentMeeting) {
 
-        this.show = function (next) {
             var self = this;
 
             makeCall("GET", "GetMeetings", null,
@@ -106,38 +100,58 @@
                         var message = req.responseText;
                         if (req.status === 200) {
 
-                            self.splitResponse(req.responseText);
+                            self.splitResponse(req.responseText, currentMeeting);
 
-                            // show on tables
-                            self.update(myMeetings);
-                            otherMeetingList.easyShow(otherMeetings);
-
-                            if (next) next(); // show the first element of the list
                         } else {
                             self.alert.textContent = message;
                         }
                     }
                 }
             );
-        };
-
-
-        this.easyShow = function (meetings) {
-            var self = this;
-
-            if (meetings !== null) {
-                self.update(meetings);
-            }
         }
 
-
-        this.splitResponse = function (res) {
+        this.splitResponse = function (res, currentMeeting) {
             let allMeetings = res.split('#');
 
             myMeetings = JSON.parse(allMeetings[0]);
             otherMeetings = JSON.parse(allMeetings[1]);
+
+            this.show(currentMeeting);
         }
 
+        this.show = function (currentMeeting) {
+
+            myMeetingTable.show(myMeetings,function() {myMeetingTable.autoclick(currentMeeting);});
+            otherMeetingTable.show(otherMeetings);
+
+        }
+    }
+
+    function PersonalMessage(_username, messagecontainer) {
+        this.username = _username;
+        this.show = function() {
+            messagecontainer.textContent = this.username;
+        }
+    }
+
+    function MeetingsTable(_alert, _listcontainer, _listcontainerbody) {
+        this.alert = _alert;
+        this.listcontainer = _listcontainer;
+        this.listcontainerbody = _listcontainerbody;
+
+        this.reset = function() {
+            this.listcontainer.style.visibility = "hidden";
+        }
+
+        this.show = function(meetings, autoclick) {
+
+            var self = this;
+
+            self.update(meetings);
+
+            if (autoclick) autoclick(); // show the first element of the list
+
+        };
 
         this.update = function (arrayMeetings) {
 
@@ -176,7 +190,7 @@
                     anchor.setAttribute('meetingId', meeting.idMeeting);
 
                     anchor.addEventListener("click", (e) => {
-
+                        //linkcell.setAttribute("class", "detailSelected");
                         meetingDetails.show(e.target.getAttribute("meetingId")); // the list must know the details container
                     }, false);
 
@@ -250,6 +264,7 @@
             this.partecipants.textContent = m.maxParticipantsNumber;
         }
     }
+
 
     function CreateMeetingForm(_form) {
         this.form = _form;

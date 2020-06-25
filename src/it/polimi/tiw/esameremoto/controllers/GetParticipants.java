@@ -2,7 +2,6 @@ package it.polimi.tiw.esameremoto.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import it.polimi.tiw.esameremoto.beans.User;
 import it.polimi.tiw.esameremoto.dao.UserDAO;
 import it.polimi.tiw.esameremoto.utils.ConnectionHandler;
 

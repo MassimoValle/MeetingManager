@@ -10,59 +10,64 @@
 </head>
 <body>
 
-    <div align="right">
-        <a href="Logout">Logout</a>
-    </div>
-    <h1>Welcome to the Meeting Mamagement Home Page</h1>
-    <p>Nice to see you again <span id="id_username"></span></p>
-    <div id="id_alert" class="alertmessage">PROVA</div>
+<div align="right">
+    <a href="Logout">Logout</a>
+</div>
+<h1>Welcome to the Meeting Mamagement Home Page</h1>
+<p>Nice to see you again <span id="id_username"></span></p>
+<div id="id_alert" class="alertmessage"></div>
 
-    <div>
-        <div align="left">
-            <h2>My Meetings:</h2>
-            <table id="id_myMeetings" class="boxed">
-                <thead>
-                    <tr>
-                        <th class="sortable">Meeting</th>
-                        <th class="sortable">Date</th>
-                        <th class="sortable">Starting hour</th>
-                        <th>Link</th>
-                    </tr>
-                </thead>
-                <tbody id="id_myMeetingsBody"></tbody>
-            </table>
-        </div>
-
-
-
-    <!-- DETAILS-->
-        <div align="right">
-            <h3>Meeting's details:</h3>
-            <table id="id_meetingDetail" class="boxed">
-                <thead>
-                    <tr>
-                    <th>Title</th>
-                    <th>Date</th>
-                    <th>Starting Hour</th>
-                    <th>Duration</th>
-                    <th>Patecipants</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td id="id_title"></td>
-                        <td id="id_date"></td>
-                        <td id="id_hour"></td>
-                        <td id="id_duration"></td>
-                        <td id="id_partecipants"></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+<div>
+    <div class="left">
+        <h2>My Meetings:</h2>
+        <table id="id_myMeetings" style="float: left">
+            <thead>
+                <tr>
+                    <th class="sortable">Meeting</th>
+                    <th class="sortable">Date</th>
+                    <th class="sortable">Starting hour</th>
+                    <th>Link</th>
+                </tr>
+            </thead>
+            <tbody id="id_myMeetingsBody"></tbody>
+        </table>
     </div>
 
+
+
+<!-- DETAILS-->
+
+    <div class="right">
+        <h3>Meeting details:</h3>
+        <table id="id_meetingDetail" style="float: left">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Date</th>
+                <th>Starting Hour</th>
+                <th>Duration</th>
+                <th>Patecipants</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td id="id_title"></td>
+                <td id="id_date"></td>
+                <td id="id_hour"></td>
+                <td id="id_duration"></td>
+                <td id="id_partecipants"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+
+<div class="right">
     <h2>Others Meetings:</h2>
-    <table id="id_otherMeetings" class="boxed">
+    <table id="id_otherMeetings">
         <thead>
         <tr>
             <th class="sortable">Meeting</th>
@@ -73,8 +78,12 @@
         </thead>
         <tbody id="id_otherMeetingsBody"></tbody>
     </table>
+</div>
 
 
+<div>
+    <h2>New meeting:</h2>
+    
     <fieldset>
         <div id="id_createMeetingForm">
             <p>Complete the form to create a meeting</p>
@@ -113,7 +122,7 @@
         </div>
     </fieldset>
 
-    </fieldset>
+</div>
 
 </body>
 </html>
