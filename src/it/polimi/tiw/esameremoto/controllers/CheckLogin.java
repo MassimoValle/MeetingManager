@@ -61,7 +61,7 @@ public class CheckLogin extends HttpServlet {
             }
 
         } catch (NullPointerException e) {
-            e.printStackTrace(); //TODO da togliere a progetto finito
+            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }

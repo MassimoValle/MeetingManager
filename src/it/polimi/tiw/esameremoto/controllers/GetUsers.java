@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -66,7 +67,8 @@ public class GetUsers extends HttpServlet {
             
             Date todayDate = simpleDateFormat.parse(simpleDateFormat.format(new Date()));
 
-            isBadRequest = title==null || title.isEmpty() || date == null || date.before(todayDate);
+            isBadRequest = title==null || title.isEmpty() || date == null || date.before(todayDate)
+                    || duration < 0 || maxParticipantsNumber < 0;
 
         } catch (IllegalArgumentException | NullPointerException | ParseException e) {
             isBadRequest = true;

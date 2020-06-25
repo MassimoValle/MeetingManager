@@ -47,7 +47,5 @@ public class AddUser extends HttpServlet {
     
         WebContext webContext = new WebContext(request, response, getServletContext(), request.getLocale());
         templateEngine.process("/anagrafica.html", webContext, response.getWriter());
-        
-        //TODO i tizi rimangono selezionati dopo che cambio pagina
     }
 }

@@ -64,7 +64,7 @@ public class CreateMeeting extends HttpServlet {
                     int attempts = (int) session.getAttribute("attempts");
                     if (attempts==3) {
                         session.removeAttribute("meetingToCreate");
-                        session.removeAttribute("usersChosen");
+                        session.removeAttribute("usersChosenUsernames");
                         session.removeAttribute("attempts");
                         session.removeAttribute("users");
                         session.removeAttribute("errorMessage");
@@ -87,7 +87,7 @@ public class CreateMeeting extends HttpServlet {
         }
         
         session.removeAttribute("meetingToCreate");
-        session.removeAttribute("usersChosen");
+        session.removeAttribute("usersChosenUsernames");
         session.removeAttribute("attempts");
         session.removeAttribute("users");
         session.removeAttribute("errorMessage");
