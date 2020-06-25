@@ -59,8 +59,8 @@ public class UserDAO {
 			preparedStatement.setString(1, username);
 			
 			try (ResultSet result = preparedStatement.executeQuery()) {
-				
-				return !result.first();
+
+				return !result.next();
 				
 			}
 		}
