@@ -15,17 +15,18 @@
 </div>
 <h1>Welcome to the Meeting Mamagement Home Page</h1>
 <p>Nice to see you again <span id="id_username"></span></p>
-<div id="id_alert" class="alertmessage"></div>
+<div id="id_mainAlert"></div>
 
-<div>
-    <div class="left">
+<div class="left">
+    <div>
         <h2>My Meetings:</h2>
-        <table id="id_myMeetings" style="float: left">
+        <p id="id_alert_myMeetings"></p>
+        <table id="id_myMeetings">
             <thead>
                 <tr>
-                    <th class="sortable">Meeting</th>
-                    <th class="sortable">Date</th>
-                    <th class="sortable">Starting hour</th>
+                    <th>Meeting</th>
+                    <th>Date</th>
+                    <th>Starting hour</th>
                     <th>Link</th>
                 </tr>
             </thead>
@@ -33,55 +34,52 @@
         </table>
     </div>
 
+    <div>
+        <h2>Others Meetings:</h2>
+        <p id="id_alert_otherMeetings"></p>
 
+        <table id="id_otherMeetings">
+            <thead>
+            <tr>
+                <th>Meeting</th>
+                <th>Date</th>
+                <th>Starting hour</th>
+                <th>Link</th>
+            </tr>
+            </thead>
+            <tbody id="id_otherMeetingsBody"></tbody>
+        </table>
+    </div>
+</div>
 
 <!-- DETAILS-->
 
-    <div class="right">
-        <h3>Meeting details:</h3>
-        <table id="id_meetingDetail" style="float: left">
-            <thead>
-            <tr>
-                <th>Title</th>
-                <th>Date</th>
-                <th>Starting Hour</th>
-                <th>Duration</th>
-                <th>Participants</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td id="id_title"></td>
-                <td id="id_date"></td>
-                <td id="id_hour"></td>
-                <td id="id_duration"></td>
-                <td id="id_participants"></td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-</div>
-
-
-
-<div class="right">
-    <h2>Others Meetings:</h2>
-    <table id="id_otherMeetings">
+<div class="right" id="id_meetingDetailDiv">
+    <h3>Meeting details:</h3>
+    <table id="id_meetingDetail">
         <thead>
         <tr>
-            <th class="sortable">Meeting</th>
-            <th class="sortable">Date</th>
-            <th class="sortable">Starting hour</th>
-            <th>Link</th>
+            <th>Title</th>
+            <th>Date</th>
+            <th>Starting Hour</th>
+            <th>Duration</th>
+            <th>Patecipants</th>
         </tr>
         </thead>
-        <tbody id="id_otherMeetingsBody"></tbody>
+        <tbody>
+        <tr>
+            <td id="id_title"></td>
+            <td id="id_date"></td>
+            <td id="id_hour"></td>
+            <td id="id_duration"></td>
+            <td id="id_participants"></td>
+        </tr>
+        </tbody>
     </table>
 </div>
 
 
-<div id="id_divWizard">
+<div id="id_divWizard" class="right">
     <h2>New meeting:</h2>
     
     <fieldset>

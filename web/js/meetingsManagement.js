@@ -7,13 +7,18 @@
     var myMeetingTable;
     var otherMeetingTable;
 
-
-    var myMeetings;
-    var otherMeetings;
     var createMeetingForm;
     var chooseMeetingParticipants;
     var newMeetingParameters;
+
+
+    // Arrays
+    var myMeetings;
+    var otherMeetings;
+
+    // helper
     var attempts = 0;
+    var selectedCell;
 
 
     // load event
@@ -27,7 +32,9 @@
     // controller
     function PageOrchestrator() {
 
-        var alertContainer = document.getElementById("id_alert");
+        let mainAlert = document.getElementById("id_mainAlert");
+        let alertContainerMyMeetings = document.getElementById("id_alert_myMeetings");
+        let alertContainerOtherMeetings = document.getElementById("id_alert_otherMeetings");
 
 
         // FUNZIONI
@@ -35,41 +42,40 @@
 
             let username = sessionStorage.getItem('username');
             let message = document.getElementById("id_username");
+
             let personalMessage = new PersonalMessage(username, message);
 
             personalMessage.show();
 
 
             myMeetingTable = new MeetingsTable(
-                alertContainer,
+                alertContainerMyMeetings,
                 document.getElementById("id_myMeetings"),
                 document.getElementById("id_myMeetingsBody"));
 
 
             otherMeetingTable = new MeetingsTable(
-                alertContainer,
+                alertContainerOtherMeetings,
                 document.getElementById("id_otherMeetings"),
                 document.getElementById("id_otherMeetingsBody"));
 
 
-            meetingList = new getAllMeetings(alertContainer);
+            meetingList = new GetAllMeetings(mainAlert);
 
 
             let detailParameters = {
-                alert: alertContainer,
                 detailcontainer: document.getElementById("id_meetingDetail"),
                 title: document.getElementById("id_title"),
                 date: document.getElementById("id_date"),
                 hour: document.getElementById("id_hour"),
                 duration: document.getElementById("id_duration"),
-                partecipants: document.getElementById("id_participants")
+                participants: document.getElementById("id_participants")
             }
 
 
             meetingDetails = new MeetingDetails(detailParameters);
 
             createMeetingForm = new CreateMeetingForm(document.querySelector("#id_createMeetingForm form"));
-            createMeetingForm.init();
         };
 
 
@@ -77,15 +83,16 @@
             myMeetingTable.reset();
             otherMeetingTable.reset();
             meetingDetails.reset();
+            createMeetingForm.init();
 
-            meetingList.getMeetings();
+            meetingList.getMeetings(currentMeeting);
         };
     }
 
 
     // constructors
 
-    function getAllMeetings(_alert) {
+    function GetAllMeetings(_alert) {
         this.alert = _alert;
 
         this.getMeetings = function(currentMeeting) {
@@ -111,6 +118,9 @@
         this.splitResponse = function (res, currentMeeting) {
             let allMeetings = res.split('#');
 
+            if(allMeetings[0] === "[]" && allMeetings[1] === "[]")
+                meetingDetails.reset();   //nasconde la meeting details
+
             myMeetings = JSON.parse(allMeetings[0]);
             otherMeetings = JSON.parse(allMeetings[1]);
 
@@ -120,8 +130,11 @@
         this.show = function (currentMeeting) {
 
             myMeetingTable.show(myMeetings,function() {myMeetingTable.autoclick(currentMeeting);});
-            otherMeetingTable.show(otherMeetings);
 
+            if(myMeetings.length === 0)
+                otherMeetingTable.show(otherMeetings,function() {otherMeetingTable.autoclick(currentMeeting);});
+
+            else otherMeetingTable.show(otherMeetings);
         }
     }
 
@@ -137,18 +150,19 @@
         this.listcontainer = _listcontainer;
         this.listcontainerbody = _listcontainerbody;
 
-        this.reset = function() {
+        this.reset = function () {
             this.listcontainer.style.visibility = "hidden";
         }
 
-        this.show = function(meetings, autoclick) {
+        this.show = function (meetings, autoclick) {
 
             var self = this;
 
-            self.update(meetings);
-
-            if (autoclick) autoclick(); // show the first element of the list
-
+            if (meetings.length !== 0){
+                self.update(meetings);
+                if (autoclick) autoclick(); // show the first element of the list
+            }
+            else this.alert.textContent = "No meetings yet!";
         };
 
         this.update = function (arrayMeetings) {
@@ -160,6 +174,8 @@
                 alert.textContent = "No meetings yet!";
             } else {
                 this.listcontainerbody.innerHTML = ""; // empty the table body
+
+                this.alert.textContent = "";
 
                 var self = this;
 
@@ -188,8 +204,12 @@
                     anchor.setAttribute('meetingId', meeting.idMeeting);
 
                     anchor.addEventListener("click", (e) => {
-                        //linkcell.setAttribute("class", "detailSelected");
-                        e.preventDefault();
+						e.preventDefault();
+					
+                        if(selectedCell !== undefined) selectedCell.className = "";
+
+                        selectedCell = e.target.closest("td");
+                        selectedCell.className = "detailSelected";
                         meetingDetails.show(e.target.getAttribute("meetingId")); // the list must know the details container
                     }, false);
 
@@ -205,8 +225,6 @@
         this.autoclick = function (meetingId) {
             var e = new Event("click");
             var selector = "a[meetingId='" + meetingId + "']";
-            //var allanchors = this.listcontainerbody.querySelectorAll("a");
-            //var myAnchor = document.querySelector(selector);
             var anchorToClick = (meetingId) ? document.querySelector(selector) : this.listcontainerbody.querySelectorAll("a")[0];
             anchorToClick.dispatchEvent(e);
         }
@@ -215,14 +233,15 @@
 
     function MeetingDetails(options) {
 
-        this.alert = options['alert'];
         this.detailcontainer = options['detailcontainer'];
 
         this.title = options['title'];
         this.date = options['date'];
         this.hour = options['hour'];
         this.duration = options['duration'];
-        this.partecipants = options['partecipants'];
+        this.participants = options['participants'];
+
+        this.detailDiv = document.getElementById("id_meetingDetailDiv");
 
 
         this.show = function (missionid) {
@@ -239,10 +258,10 @@
                             var meeting = JSON.parse(req.responseText);
                             self.update(meeting); // self is the object on which the function
                             // is applied
-                            self.detailcontainer.style.visibility = "visible";
+                            self.detailDiv.style.visibility = "visible";
 
                         } else {
-                            self.alert.textContent = message;
+                            self.reset();
 
                         }
                     }
@@ -252,15 +271,15 @@
 
 
         this.reset = function () {
-            this.detailcontainer.style.visibility = "hidden";
+            this.detailDiv.style.visibility = "hidden";
         }
 
         this.update = function (m) {
-            this.title.textContent = m.title;
+            this.title.textContent = m.title; this.title.className = "detailSelected";
             this.date.textContent = m.date;
             this.hour.textContent = m.hour;
             this.duration.textContent = m.duration;
-            this.partecipants.textContent = m.maxParticipantsNumber;
+            this.participants.textContent = m.maxParticipantsNumber;
         }
     }
 
@@ -310,6 +329,9 @@
             this.form.querySelector('input[type="date"]').setAttribute("min", todayDate);
             this.form.querySelectorAll('input[type="number"]').forEach(element => {
                 element.setAttribute("min", 0);
+            })
+            this.form.querySelectorAll("input").forEach(function (input) {
+                input.required = true;
             })
 
             // adding listeners
@@ -401,7 +423,6 @@
                             let message = request.responseText;
                             switch (request.status) {
                                 case 200:
-                                    createMeetingForm.reset();
                                     pageOrchestrator.refresh();
                                     break;
                                 default:
@@ -409,9 +430,16 @@
                                         let cancellazione = new Cancellazione();
                                         document.getElementById("id_chooseParticipants").hidden = true;
                                         cancellazione.show();
+
+                                        document.querySelector("#id_chooseParticipants .errorMessage")
+                                            .textContent = message;
                                     }
-                                    document.querySelector("#id_chooseParticipants .errorMessage")
-                                        .textContent = message;
+                                    else {
+                                        pageOrchestrator.refresh();
+
+                                        document.querySelector("#id_createMeetingForm .errorMessage")
+                                            .textContent = message;
+                                    }
                             }
 
                             attempts = 0;
@@ -421,7 +449,7 @@
             else {
                 this.tableDiv.querySelector(".errorMessage").textContent =
                     "Troppi utenti selezionati, eliminane almeno "
-                    + (newMeetingParameters.maxParticipantsNumber - newMeetingParameters.participants.length);
+                    + (newMeetingParameters.participants.length - newMeetingParameters.maxParticipantsNumber);
 
                 newMeetingParameters.participants = [];
 
@@ -516,7 +544,6 @@
             event.preventDefault();
 
             document.getElementById("id_threeAttemptsDone").hidden = true;
-            createMeetingForm.reset();
             pageOrchestrator.refresh();
         }
 

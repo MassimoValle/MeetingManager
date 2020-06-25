@@ -1,6 +1,5 @@
 
 .userChosen {
-    fill: coral;
     background-color: aquamarine;
 }
 
@@ -10,7 +9,7 @@
 }
 
 .detailSelected {
-    background-color: gray;
+    background-color: yellow;
 }
 
 table {
@@ -29,11 +28,11 @@ td, th {
     margin-right: 2%;
     width: 48%;
     float: left;
+    clear: both;
 }
 
 .right {
     margin-left: 2%;
-    margin-bottom: 2%;
     width: 48%;
     float: right;
 }
