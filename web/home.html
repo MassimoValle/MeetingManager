@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en"  xmlns:th="http://www.thymeleaf.org">
 <link rel="stylesheet" type="text/css" media="all"
-      href="/style.css" th:href="@{/style.css}" />
+      href="style.css" th:href="@{/style.css}" />
 <head>
     <meta charset="UTF-8">
     <title>Home Page</title>
 </head>
 <body>
 
-<div align="right">
+<div id="id_logout">
     <a th:href="@{/Logout}">Logout</a>
 </div>
 <h1>Welcome to the Meeting Mamagement Home Page</h1>
@@ -16,7 +16,7 @@
 
 
 <h2>My Meetings:</h2>
-<table>
+<table th:if="${not #lists.isEmpty(myMeetings)}">
     <thead>
     <tr>
         <th>Meeting</th>
@@ -27,16 +27,17 @@
     </thead>
     <tbody>
     <tr th:each="myMeeting : ${myMeetings}">
-        <td th:text="${myMeeting.title}"></td>
-        <td th:text="${myMeeting.date}"></td>
-        <td th:text="${myMeeting.hour}"></td>
+        <td th:text="${myMeeting.title}">title</td>
+        <td th:text="${myMeeting.date}">date</td>
+        <td th:text="${myMeeting.hour}">hour</td>
         <td><a th:href="@{/GetMeetingDetails(meetingId=${myMeeting.idMeeting})}">Details</a></td>
     </tr>
     </tbody>
 </table>
+<p th:if="${ #lists.isEmpty(myMeetings)}">No meetings yet!</p>
 
 <h2>Others Meetings:</h2>
-<table>
+<table th:if="${not #lists.isEmpty(othersMeetings)}">
     <thead>
     <tr>
         <th>Meeting</th>
@@ -47,15 +48,17 @@
     </thead>
     <tbody>
     <tr th:each="othersMeeting : ${othersMeetings}">
-        <td th:text="${othersMeeting.title}"></td>
-        <td th:text="${othersMeeting.date}"></td>
-        <td th:text="${othersMeeting.hour}"></td>
+        <td th:text="${othersMeeting.title}">title</td>
+        <td th:text="${othersMeeting.date}">date</td>
+        <td th:text="${othersMeeting.hour}">hour</td>
         <td><a th:href="@{/GetMeetingDetails(meetingId=${othersMeeting.idMeeting})}">Details</a></td>
     </tr>
     </tbody>
 </table>
+<p th:if="${ #lists.isEmpty(othersMeetings)}">No meetings yet!</p>
 
 <div>
+    <h2>Create Meeting:</h2>
     <p>Complete the form to create a meeting</p>
     <form action="#" th:action="@{/GetUsers}" method="POST">
         <fieldset>

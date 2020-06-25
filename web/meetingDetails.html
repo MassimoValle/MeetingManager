@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"  xmlns:th="http://www.thymeleaf.org">
 <link rel="stylesheet" type="text/css" media="all"
-      href="/style.css" th:href="@{/style.css}" />
+      href="style.css" th:href="@{/style.css}" />
 <head>
     <meta charset="UTF-8">
     <title>Home Page</title>
@@ -12,13 +12,28 @@
     <a th:href="@{/Logout}">Logout</a>
 </div>
 
-<h2>Meeting selected:</h2>
+<h2>Meeting details:</h2>
 
-    <h3>Title: </h3><p th:text="${meeting.title}"></p>
-    <h3>Date: </h3><p th:text="${meeting.date}"></p>
-    <h3>Hour: </h3><p th:text="${meeting.hour}"></p>
-    <h3>Duration: </h3><p th:text="${meeting.duration}"></p>
-    <h3>Patecipants: </h3><p th:text="${meeting.maxParticipantsNumber}"></p>
+<table>
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Date</th>
+        <th>Starting hour</th>
+        <th>Duration</th>
+        <th>Patecipants</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td th:text="${meeting.title}">title</td>
+        <td th:text="${meeting.date}">00:00:00</td>
+        <td th:text="${meeting.hour}">00:00:00</td>
+        <td th:text="${meeting.duration}">30</td>
+        <td th:text="${meeting.maxParticipantsNumber}">5</td>
+    </tr>
+    </tbody>
+</table>
 
 </body>
 </html>

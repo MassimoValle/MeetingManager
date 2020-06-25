@@ -1,13 +1,26 @@
-table, td, th {
-    border: 1px solid black;
-}
 
 .userChosen {
-    fill: coral;
-    background-color: aquamarine;
+    background-color: lightgreen;
 }
 
-.errorMessage {
+.errorMessage, .boldRed {
     color: red;
     font-weight: bold;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    border: none;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+#id_logout {
+    margin-right: 2%;
+    float: right;
 }
