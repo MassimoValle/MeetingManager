@@ -41,3 +41,13 @@ td, th {
     margin-right: 2%;
     float: right;
 }
+
+.buttonLeft {
+    margin-left: 2%;
+    float: left;
+}
+
+.buttonRight {
+    margin-right: 2%;
+    float: right;
+}

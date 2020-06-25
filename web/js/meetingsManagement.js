@@ -448,7 +448,7 @@
                     }
                 });
 
-            let tbody = event.target.closest("tbody");
+            let tbody = document.querySelector("#id_chooseParticipants tbody");
             // vengono aggiunti all'oggetto newMeetingForm gli usernames scelti
             Array.from(tbody.querySelectorAll("td.userChosen")).forEach(function (td) {
                 let username = td.querySelector("a").textContent;
@@ -559,27 +559,23 @@
                     }
                 });
 
-                tr = document.createElement("tr");
+                let buttonDiv = document.querySelector("#id_chooseParticipants .buttonDiv");
+                buttonDiv.innerHTML = "";
 
-                td = document.createElement("td");
-                anchor = document.createElement("a");
-                anchor.textContent = "BACK";
-                anchor.href = "#";
-                anchor.addEventListener("click", (event => this.backButtonHandler(event)));
+                let buttonLeft = document.createElement("button");
+                buttonLeft.className = "buttonLeft";
 
-                td.appendChild(anchor);
-                tr.appendChild(td);
+                let buttonRight = document.createElement("button");
+                buttonRight.className = "buttonRight";
 
-                td = document.createElement("td");
-                anchor = document.createElement("a");
-                anchor.textContent = "INVITA";
-                anchor.href = "#";
-                anchor.addEventListener("click", (event => this.invitaButtonHandler(event)));
+                buttonDiv.appendChild(buttonRight);
+                buttonDiv.appendChild(buttonLeft);
 
-                td.appendChild(anchor);
-                tr.appendChild(td);
+                buttonLeft.textContent = "BACK";
+                buttonLeft.addEventListener("click", (event => this.backButtonHandler(event)));
 
-                tbody.appendChild(tr);
+                buttonRight.textContent = "INVITA";
+                buttonRight.addEventListener("click", (event => this.invitaButtonHandler(event)));
             }
 
             // viene mostrato tutto
@@ -603,6 +599,8 @@
 
             let anchor = document.getElementById("id_back");
             anchor.addEventListener("click", event => this.backButtonHandler(event));
+            document.querySelector("#id_threeAttemptsDone h4").textContent
+                = "Tre tentativi di definire una riunione con troppi partecipanti, la riunione non sarà creata."
         }
     }
 
