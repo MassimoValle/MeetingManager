@@ -284,11 +284,12 @@
     }
 
 
-    //WIZARDO FOR CREATING A NEW MEETING.
+    //FORM FOR CREATING A NEW MEETING.
     function CreateMeetingForm(_form) {
         this.form = _form;
 
         // defining handlers
+        // invia passa al modulo di scelta dei partecipanti
         this.inviaHandler = function (event) {
             event.preventDefault();
 
@@ -330,6 +331,7 @@
             this.form.querySelectorAll('input[type="number"]').forEach(element => {
                 element.setAttribute("min", 0);
             })
+            // set the required inputs
             this.form.querySelectorAll("input").forEach(function (input) {
                 input.required = true;
             })
@@ -341,6 +343,7 @@
             this.reset();
         }
 
+        // reset the module of the creating new form
         this.reset = function () {
             document.getElementById("id_chooseParticipants").hidden = true;
             document.getElementById("id_threeAttemptsDone").hidden = true;
@@ -356,12 +359,14 @@
         }
     }
 
+    // Oggetto che rappresenta la scelta dei partecipanti
     function ChooseMeetingParticipants(_usernamesParticipants) {
         this.tableDiv = document.getElementById("id_chooseParticipants");
         this.usernamesParticipants = _usernamesParticipants;
         let self = this;
 
-        //handlers
+        //HANDLERS
+        // selezionando un utente viene modificata la sua classe in "userChose"
         this.selectHandler = function (event) {
             event.preventDefault();
             let td = event.target.closest("td");
@@ -371,7 +376,7 @@
             else
                 td.className = "userChosen";
         }
-
+        // torna alla form principale, mantenendo gli stessi dati che c'erano prima
         this.backButtonHandler = function (event) {
             event.preventDefault();
 
@@ -381,9 +386,10 @@
             form.hidden = false;
             form.querySelector('p.errorMessage').textContent = "";
         }
-
+        // vengono invitati gli utenti precedentemente selezionati
         this.invitaButtonHandler = function (event) {
             event.preventDefault();
+            // i tentativi vengono incrementati ad ogni "invita"
             attempts+=1;
 
             makeCall("GET", "IncrementAttempts", null,
@@ -391,29 +397,31 @@
                     let json_newMeetingParameters = JSON.stringify(newMeetingParameters);
 
                     if (request.readyState === XMLHttpRequest.OPENED){
+                        // gli passo i parametri del meeting perché il server deve verificare che non siano corrotti
                         request.setRequestHeader("newMeetingParameters", json_newMeetingParameters);
                     }
                     if (request.readyState === XMLHttpRequest.DONE){
                         if (request.status!==200) {
                             document.querySelector("#id_chooseParticipants errorMessage")
                                 .textContent = "There has been troubles with the server connection while incrementing attempts.";
-                             attempts = 0;
+
+                            // qualcosa è andato storto -> tentativi posti a 0
+                            attempts = 0;
                         }
                     }
                 });
 
             let tbody = event.target.closest("tbody");
-
+            // vengono aggiunti all'oggetto newMeetingForm gli usernames scelti
             Array.from(tbody.querySelectorAll("td.userChosen")).forEach(function (td) {
                 let username = td.querySelector("a").textContent;
 
                 newMeetingParameters.participants.push(username);
             });
-
+            // se il numero di partecipanti è legale, allora viene mandata la GET
             if (newMeetingParameters.maxParticipantsNumber >= newMeetingParameters.participants.length){
                 let json_newMeetingParameters = JSON.stringify(newMeetingParameters);
 
-                let self = this;
                 makeCall("GET", "CreateMeeting", null,
                     function (request) {
                         if (request.readyState === XMLHttpRequest.OPENED){
@@ -423,9 +431,12 @@
                             let message = request.responseText;
                             switch (request.status) {
                                 case 200:
+                                    // se tutto va bene, viene ricaricata la pagina
                                     pageOrchestrator.refresh();
                                     break;
                                 default:
+                                    // se il motivo della bad request sono i tentativi, allora viene inviato un messaggio di allerta
+                                    // e viene mostrata la "pagina" di cancellazione
                                     if (message.toString().localeCompare(("attempts").toString())===0){ //sono uguali i due messaggi
                                         let cancellazione = new Cancellazione();
                                         document.getElementById("id_chooseParticipants").hidden = true;
@@ -435,6 +446,7 @@
                                             .textContent = message;
                                     }
                                     else {
+                                        // altrimenti ricarica la pagina e mostra cosa è successo
                                         pageOrchestrator.refresh();
 
                                         document.querySelector("#id_createMeetingForm .errorMessage")
@@ -442,17 +454,20 @@
                                     }
                             }
 
+                            // se viene effettuata la richiesta, i tentativi vengono resettati
                             attempts = 0;
                         }
                     });
             }
             else {
+                // se non va a buon fine la richiesta, viene mostrato il messaggio di errore e i partecipanti vengono resettati
                 this.tableDiv.querySelector(".errorMessage").textContent =
                     "Troppi utenti selezionati, eliminane almeno "
                     + (newMeetingParameters.participants.length - newMeetingParameters.maxParticipantsNumber);
 
                 newMeetingParameters.participants = [];
 
+                // se i tentativi sono stati troppi, viene mostrata "cancellazione"
                 if (attempts===3) {
                     let cancellazione = new Cancellazione();
                     document.getElementById("id_chooseParticipants").hidden = true;
@@ -467,26 +482,22 @@
             let length = self.usernamesParticipants.length;
             let tbody = document.querySelector("#id_chooseParticipants tbody");
 
+            // se non ci sono users nel database (al di fuori di sé stesso), viene mostrato con un messaggio
             if (length <= 1){
-                tbody.innerHTML = "";
+                tbody.closest("table").innerHTML = "";
                 self.tableDiv.querySelector("h5.errorMessage").textContent = "There aren't users yet.";
 
-                let tr = document.createElement("tr");
-                let td = document.createElement("td");
                 let anchor = document.createElement("a");
 
                 anchor.textContent = "BACK";
                 anchor.href = "#";
 
-                td.appendChild(anchor);
-                tr.appendChild(td);
-                tbody.appendChild(tr);
-
                 anchor.addEventListener("click", (event => this.backButtonHandler(event)));
 
+                this.tableDiv.appendChild(anchor);
                 this.tableDiv.hidden = false;
             }
-            else {
+            else { // se ci sono invece, viene creata una tabella per poterli selezionare
                 let tr, td, anchor;
 
                 tbody.innerHTML = "";
@@ -534,12 +545,14 @@
                 tbody.appendChild(tr);
             }
 
+            // viene mostrato tutto
             this.tableDiv.hidden = false;
         }
     }
 
     function Cancellazione() {
         //handler
+        // torna alla home page iniziale.
         this.backButtonHandler = function (event) {
             event.preventDefault();
 
@@ -547,6 +560,7 @@
             pageOrchestrator.refresh();
         }
 
+        // mostra cancellazione e assegna gli handler
         this.show = function () {
             document.getElementById("id_threeAttemptsDone").hidden = false;
 
@@ -554,7 +568,8 @@
             anchor.addEventListener("click", event => this.backButtonHandler(event));
         }
     }
-    
+
+    // oggetto per collezionare i parametri del meeting da creare che verranno passati al server
     function NewMeetingParameters(_form, _usernameCreator) {
         this.title = _form.querySelector('input[name="title"]').value;
         this.date = _form.querySelector('input[name="date"]').value;
