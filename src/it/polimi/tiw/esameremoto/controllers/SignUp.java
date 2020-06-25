@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.regex.Pattern;
 
 @WebServlet("/SignUp")
 @MultipartConfig
@@ -47,7 +48,7 @@ public class SignUp extends HttpServlet {
             response.getWriter().println("Credentials can't be null.");
             return;
         }
-        else if (/*TODO checkare che la mail sia ok*/false){
+        else if (!isEmailValid(email)){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("The email isn't valid.");
             return;
@@ -86,5 +87,20 @@ public class SignUp extends HttpServlet {
     
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request, response);
+    }
+    
+    private boolean isEmailValid(String email)
+    {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
+                "[a-zA-Z0-9_+&*-]+)*@" +
+                "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+                "A-Z]{2,7}$";
+        
+        Pattern patternRegex = Pattern.compile(emailRegex);
+        
+        if (email == null)
+            return false;
+        
+        return patternRegex.matcher(email).matches();
     }
 }

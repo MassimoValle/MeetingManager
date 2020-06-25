@@ -37,3 +37,8 @@ td, th {
     width: 48%;
     float: right;
 }
+
+#id_logout {
+    margin-right: 2%;
+    float: right;
+}

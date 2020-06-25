@@ -70,7 +70,9 @@ public class CreateMeeting extends HttpServlet {
                             date == null ||
                             date.before(todayDate) ||
                             usernameCreator==null ||
-                            usernameCreator.isEmpty();
+                            usernameCreator.isEmpty() ||
+                            duration < 0 ||
+                            maxParticipantsNumber < 0;
         
         } catch (IllegalArgumentException | NullPointerException | ParseException e) {
             isBadRequest = true;

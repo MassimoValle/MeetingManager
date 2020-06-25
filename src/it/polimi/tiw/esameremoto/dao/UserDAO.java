@@ -60,7 +60,7 @@ public class UserDAO {
 			
 			try (ResultSet result = preparedStatement.executeQuery()) {
 				
-				return !result.first();
+				return !result.next();
 				
 			}
 		}

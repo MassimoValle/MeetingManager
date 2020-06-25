@@ -21,12 +21,13 @@ public class IncrementAttempts extends HttpServlet {
         
         Object objectAttempts = session.getAttribute("attempts");
         int attempts;
-        String previousTitle = (String) session.getAttribute("title");
-        String currentTitle = request.getHeader("title");
+        String previous_jsonString_newMeetingParameters = (String) session.getAttribute("jsonString_newMeetingParameters");
+        String current_jsonString_newMeetingParameters = request.getHeader("newMeetingParameters");
     
-        if (objectAttempts==null || previousTitle==null || !previousTitle.equals(currentTitle)) {
+        if (objectAttempts==null || previous_jsonString_newMeetingParameters==null
+                || !previous_jsonString_newMeetingParameters.equals(current_jsonString_newMeetingParameters)) {
             session.setAttribute("attempts", 1);
-            session.setAttribute("title", currentTitle);
+            session.setAttribute("jsonString_newMeetingParameters", current_jsonString_newMeetingParameters);
         }
         else {
             attempts = (int) objectAttempts;

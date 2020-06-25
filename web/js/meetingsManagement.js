@@ -62,15 +62,14 @@
                 date: document.getElementById("id_date"),
                 hour: document.getElementById("id_hour"),
                 duration: document.getElementById("id_duration"),
-                partecipants: document.getElementById("id_partecipants")
+                partecipants: document.getElementById("id_participants")
             }
 
 
             meetingDetails = new MeetingDetails(detailParameters);
 
             createMeetingForm = new CreateMeetingForm(document.querySelector("#id_createMeetingForm form"));
-            document.getElementById("id_chooseParticipants").hidden = true;
-            document.getElementById("id_threeAttemptsDone").hidden = true;
+            createMeetingForm.init();
         };
 
 
@@ -80,7 +79,6 @@
             meetingDetails.reset();
 
             meetingList.getMeetings();
-            createMeetingForm.reset();
         };
     }
 
@@ -191,6 +189,7 @@
 
                     anchor.addEventListener("click", (e) => {
                         //linkcell.setAttribute("class", "detailSelected");
+                        e.preventDefault();
                         meetingDetails.show(e.target.getAttribute("meetingId")); // the list must know the details container
                     }, false);
 
@@ -266,19 +265,9 @@
     }
 
 
+    //WIZARDO FOR CREATING A NEW MEETING.
     function CreateMeetingForm(_form) {
         this.form = _form;
-
-        // set the range of the inputs.
-        let todayDate = new Date().toISOString().substring(0,10);
-        this.form.querySelector('input[type="date"]').setAttribute("min", todayDate);
-        this.form.querySelectorAll('input[type="number"]').forEach(element => {
-            element.setAttribute("min", 0);
-        })
-
-        // adding listeners
-        var button = this.form.querySelector('input[type="button"]');
-        button.addEventListener("click", (event => this.inviaHandler(event)));
 
         // defining handlers
         this.inviaHandler = function (event) {
@@ -298,14 +287,12 @@
                             switch (request.status) {
                                 case 200:
                                     let usernamesParticipants = JSON.parse(request.responseText);
-                                    self.form.querySelector('p.errorMessage').textContent = "";
                                     chooseMeetingParticipants = new ChooseMeetingParticipants(usernamesParticipants);
                                     chooseMeetingParticipants.showParticipants();
                                     break;
-                                case 500:   //TODO da testare
+                                case 500:
                                     let errorMessage = request.responseText;
-                                    self.form.hidden = false;
-                                    self.form.reset();
+                                    self.reset();
                                     self.form.querySelector('p.errorMessage').textContent = errorMessage;
                                     break;
                             }
@@ -316,10 +303,33 @@
                 this.form.reportValidity();
         }
 
+        // defining functions
+        this.init = function () {
+            // set the range of the inputs.
+            let todayDate = new Date().toISOString().substring(0,10);
+            this.form.querySelector('input[type="date"]').setAttribute("min", todayDate);
+            this.form.querySelectorAll('input[type="number"]').forEach(element => {
+                element.setAttribute("min", 0);
+            })
+
+            // adding listeners
+            let button = this.form.querySelector('input[type="button"]');
+            button.addEventListener("click", (event => this.inviaHandler(event)));
+
+            this.reset();
+        }
+
         this.reset = function () {
             document.getElementById("id_chooseParticipants").hidden = true;
             document.getElementById("id_threeAttemptsDone").hidden = true;
+
             this.form.reset();
+            // delete every error message
+            Array.from(document.querySelectorAll("#id_divWizard .errorMessage")).forEach(
+                function (errorContenitor) {
+                    errorContenitor.textContent = "";
+                }
+            )
             document.getElementById("id_createMeetingForm").hidden = false;
         }
     }
@@ -331,6 +341,7 @@
 
         //handlers
         this.selectHandler = function (event) {
+            event.preventDefault();
             let td = event.target.closest("td");
 
             if (td.className === "userChosen")
@@ -339,31 +350,40 @@
                 td.className = "userChosen";
         }
 
-        this.backButtonHandler = function () {
+        this.backButtonHandler = function (event) {
+            event.preventDefault();
+
             document.getElementById("id_chooseParticipants").hidden = true;
-            document.getElementById("id_createMeetingForm").hidden = false;
+            let form = document.getElementById("id_createMeetingForm");
+
+            form.hidden = false;
+            form.querySelector('p.errorMessage').textContent = "";
         }
 
         this.invitaButtonHandler = function (event) {
+            event.preventDefault();
             attempts+=1;
 
             makeCall("GET", "IncrementAttempts", null,
                 function (request) {
+                    let json_newMeetingParameters = JSON.stringify(newMeetingParameters);
+
                     if (request.readyState === XMLHttpRequest.OPENED){
-                        request.setRequestHeader("title", newMeetingParameters.title);
+                        request.setRequestHeader("newMeetingParameters", json_newMeetingParameters);
                     }
                     if (request.readyState === XMLHttpRequest.DONE){
-                        if (request.status!==200)
+                        if (request.status!==200) {
                             document.querySelector("#id_chooseParticipants errorMessage")
                                 .textContent = "There has been troubles with the server connection while incrementing attempts.";
+                             attempts = 0;
+                        }
                     }
                 });
 
             let tbody = event.target.closest("tbody");
 
             Array.from(tbody.querySelectorAll("td.userChosen")).forEach(function (td) {
-                let anchor = td.querySelector("a");
-                let username = anchor.textContent;
+                let username = td.querySelector("a").textContent;
 
                 newMeetingParameters.participants.push(username);
             });
@@ -381,31 +401,33 @@
                             let message = request.responseText;
                             switch (request.status) {
                                 case 200:
+                                    createMeetingForm.reset();
                                     pageOrchestrator.refresh();
                                     break;
                                 default:
                                     if (message.toString().localeCompare(("attempts").toString())===0){ //sono uguali i due messaggi
                                         let cancellazione = new Cancellazione();
+                                        document.getElementById("id_chooseParticipants").hidden = true;
                                         cancellazione.show();
                                     }
                                     document.querySelector("#id_chooseParticipants .errorMessage")
                                         .textContent = message;
                             }
 
-                            self.tableDiv.querySelector(".errorMessage").textContent = "";
                             attempts = 0;
                         }
                     });
             }
             else {
-                newMeetingParameters.participants = [];
                 this.tableDiv.querySelector(".errorMessage").textContent =
                     "Troppi utenti selezionati, eliminane almeno "
                     + (newMeetingParameters.maxParticipantsNumber - newMeetingParameters.participants.length);
 
+                newMeetingParameters.participants = [];
+
                 if (attempts===3) {
-                    this.tableDiv.querySelector(".errorMessage").textContent = "";
                     let cancellazione = new Cancellazione();
+                    document.getElementById("id_chooseParticipants").hidden = true;
                     cancellazione.show();
                     attempts = 0;
                 }
@@ -432,7 +454,7 @@
                 tr.appendChild(td);
                 tbody.appendChild(tr);
 
-                anchor.addEventListener("click", (() => this.backButtonHandler()));
+                anchor.addEventListener("click", (event => this.backButtonHandler(event)));
 
                 this.tableDiv.hidden = false;
             }
@@ -443,13 +465,14 @@
 
                 Array.from(self.usernamesParticipants).forEach(function(usernameParticipant) { // self visible here, not this
                     // The user of the session is not displayed
+                    let sessionUser = sessionStorage.getItem("username");
 
-                    if (usernameParticipant.toString().localeCompare(sessionStorage.getItem("username").toString())!==0) {
+                    if (usernameParticipant.toString().localeCompare(sessionUser.toString()) !== 0) {
                         tr = document.createElement("tr");
                         td = document.createElement("td");
 
                         anchor = document.createElement("a");
-                        anchor.textContent = usernameParticipant;
+                        anchor.textContent = usernameParticipant.toString();
                         anchor.href = "#";
 
                         td.appendChild(anchor);
@@ -466,7 +489,7 @@
                 anchor = document.createElement("a");
                 anchor.textContent = "BACK";
                 anchor.href = "#";
-                anchor.addEventListener("click", (() => this.backButtonHandler()));
+                anchor.addEventListener("click", (event => this.backButtonHandler(event)));
 
                 td.appendChild(anchor);
                 tr.appendChild(td);
@@ -489,18 +512,19 @@
 
     function Cancellazione() {
         //handler
-        this.backButtonHandler = function () {
+        this.backButtonHandler = function (event) {
+            event.preventDefault();
+
             document.getElementById("id_threeAttemptsDone").hidden = true;
+            createMeetingForm.reset();
             pageOrchestrator.refresh();
         }
 
         this.show = function () {
-            document.getElementById("id_createMeetingForm").hidden = true;
-            document.getElementById("id_chooseParticipants").hidden = true;
             document.getElementById("id_threeAttemptsDone").hidden = false;
 
             let anchor = document.getElementById("id_back");
-            anchor.addEventListener("click", () => this.backButtonHandler());
+            anchor.addEventListener("click", event => this.backButtonHandler(event));
         }
     }
     
@@ -514,5 +538,4 @@
 
         this.participants = [];
     }
-
 })();

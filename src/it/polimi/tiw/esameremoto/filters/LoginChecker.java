@@ -29,6 +29,4 @@ public class LoginChecker implements Filter {
     public void init(FilterConfig config) throws ServletException {
         
     }
-    
-    //TODO controllare se i filtri ci sono tutti
 }
