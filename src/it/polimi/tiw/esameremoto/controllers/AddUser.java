@@ -16,7 +16,6 @@ import java.util.ArrayList;
 @WebServlet("/AddUser")
 public class AddUser extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    
     private TemplateEngine templateEngine;
     
     public void init() throws ServletException {
