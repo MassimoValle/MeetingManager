@@ -26,8 +26,8 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 @WebServlet("/CheckLogin")
 public class CheckLogin extends HttpServlet {
-
     private static final long serialVersionUID = 1L;
+    
     private Connection connection = null;
     private TemplateEngine templateEngine;
 
@@ -106,6 +106,4 @@ public class CheckLogin extends HttpServlet {
             e.printStackTrace();
         }
     }
-
-
 }
