@@ -114,4 +114,12 @@ public class CreateMeeting extends HttpServlet {
             e.printStackTrace();
         }
     }
+    
+    public void destroy() {
+        try {
+            ConnectionHandler.closeConnection(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

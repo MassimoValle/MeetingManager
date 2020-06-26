@@ -103,4 +103,12 @@ public class SignUp extends HttpServlet {
         
         return patternRegex.matcher(email).matches();
     }
+    
+    public void destroy() {
+        try {
+            ConnectionHandler.closeConnection(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

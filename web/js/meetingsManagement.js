@@ -19,6 +19,7 @@
     // helper
     var attempts = 0;   // nr di tentativo di invito dei partecipanti
     var selectedCell;   // è la cella gialla che corrisponde al meetingDetails
+    var meetingList;    // è l'oggetto che serve a chiamare tutti i meetings dal database e mostrarli allo user
 
 
     // load event
@@ -141,11 +142,12 @@
 
             myMeetingTable.show(myMeetings,function() {myMeetingTable.autoclick(currentMeeting);});
 
-            // se non ho meeting fatti da me...
+            // se non ho meeting fatti da me, mostro i dettagli del primo meeting non mio
             if(myMeetings.length === 0)
                 otherMeetingTable.show(otherMeetings,function() {otherMeetingTable.autoclick(currentMeeting);});
-
-            else otherMeetingTable.show(otherMeetings);
+            // altrimenti NON chiamo l'autoclick sugli altri meetings
+            else
+                otherMeetingTable.show(otherMeetings);
         }
     }
 
@@ -159,8 +161,8 @@
 
     function MeetingsTable(_alert, _listcontainer, _listcontainerbody) {
         this.alert = _alert;
-        this.listcontainer = _listcontainer;
-        this.listcontainerbody = _listcontainerbody;
+        this.listcontainer = _listcontainer;            // intera tabella html dei meetings
+        this.listcontainerbody = _listcontainerbody;    // solo il body della tabella html dei meetings
 
         this.reset = function () {
             this.listcontainer.style.visibility = "hidden";
@@ -175,7 +177,7 @@
             if (meetings.length !== 0){
 
                 self.update(meetings);
-                if (autoclick) autoclick(); // mostra il primo meeting della tabella
+                if (autoclick) self.autoclick(); // mostra il primo meeting della tabella
 
             }
             else this.alert.textContent = "No meetings yet!";
@@ -221,7 +223,7 @@
                     anchor = document.createElement("a");
                     let linkText = document.createTextNode("Show");
                     anchor.appendChild(linkText);
-                    anchor.setAttribute('meetingId', meeting.idMeeting);
+                    anchor.setAttribute('meetingId', meeting.idMeeting);    //IntelliJ lo dà non safe perché "idMeeting" è un attributo del database, preso da JSON. IntelliJ non ha idea che esista.
 
                     anchor.addEventListener("click", (e) => {
 

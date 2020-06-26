@@ -50,4 +50,12 @@ public class GetParticipants extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(json_users);
     }
+    
+    public void destroy() {
+        try {
+            ConnectionHandler.closeConnection(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
