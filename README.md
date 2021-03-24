@@ -1,7 +1,7 @@
 # Meeting Manager
 
 ## Getting Started
-The goal of the project is to create a web application that, after login, allows you to create new meetings and show those already scheduled.
+The goal of the project is to create a web application that, after login, allows you to create new meetings and shows those already scheduled.
 
 
 ## Documentation
